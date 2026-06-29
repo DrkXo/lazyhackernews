@@ -11,7 +11,7 @@ class LazyHackerNewsCubit extends Cubit<LazyHackerNewsState> {
   final FetchStoriesUseCase _fetchStories;
 
   LazyHackerNewsCubit({required this._fetchStories})
-      : super(const LazyHackerNewsState()) {
+      : super(const LazyHackerNewsState(isLoading: true)) {
     _loadStories();
   }
 
@@ -53,6 +53,26 @@ class LazyHackerNewsCubit extends Cubit<LazyHackerNewsState> {
     _loadStories();
   }
 
+  void loadMore() {
+    if (state.isLoadingMore || !state.hasMore) return;
+    _loadBatch(state.stories.length);
+  }
+
+  Future<void> _loadBatch(int offset) async {
+    emit(state.copyWith(isLoadingMore: true));
+    final result = await _fetchStories(state.category, offset: offset, limit: 15);
+    result.fold(
+      (failure) => emit(state.copyWith(isLoadingMore: false)),
+      (stories) => emit(
+        state.copyWith(
+          stories: [...state.stories, ...stories],
+          isLoadingMore: false,
+          hasMore: stories.length >= 15,
+        ),
+      ),
+    );
+  }
+
   Future<void> _loadStories() async {
     final result = await _fetchStories(state.category);
     result.fold(
@@ -60,7 +80,12 @@ class LazyHackerNewsCubit extends Cubit<LazyHackerNewsState> {
         state.copyWith(isLoading: false, error: failure.message),
       ),
       (stories) => emit(
-        state.copyWith(stories: stories, isLoading: false, error: null),
+        state.copyWith(
+          stories: stories,
+          isLoading: false,
+          error: null,
+          hasMore: stories.length >= 15,
+        ),
       ),
     );
   }

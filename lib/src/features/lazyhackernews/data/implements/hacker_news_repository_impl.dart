@@ -12,10 +12,12 @@ class HackerNewsRepositoryImpl implements HackerNewsRepository {
   HackerNewsRepositoryImpl({required this._dataSource});
 
   @override
-  Future<Either<Failure, List<Story>>> fetchStories(FeedType feed) async {
+  Future<Either<Failure, List<Story>>> fetchStories(FeedType feed, {int offset = 0, int limit = 15}) async {
     try {
       final ids = await _dataSource.fetchFeedIds(feed);
-      final items = await _dataSource.fetchItems(ids.take(30).toList());
+      final batch = ids.skip(offset).take(limit).toList();
+      if (batch.isEmpty) return const Right([]);
+      final items = await _dataSource.fetchItems(batch);
       final stories = items.map(_toStory).toList();
       return Right(stories);
     } on NetworkException catch (e) {

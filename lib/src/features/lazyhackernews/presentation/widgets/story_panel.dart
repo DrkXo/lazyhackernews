@@ -66,11 +66,16 @@ class StoryPanel extends StatelessComponent {
       );
     }
 
+    final footer = state.isLoadingMore ? 1 : 0;
+
     return ListView.builder(
       controller: scrollService.controller,
       keyboardScrollable: false,
-      itemCount: state.stories.length,
+      itemCount: state.stories.length + footer,
       itemBuilder: (context, index) {
+        if (index == state.stories.length) {
+          return _loadingRow(context);
+        }
         final story = state.stories[index];
         return StoryRow(
           story: story,
@@ -79,6 +84,18 @@ class StoryPanel extends StatelessComponent {
           onTap: () => onStoryTap(index),
         );
       },
+    );
+  }
+
+  Component _loadingRow(BuildContext context) {
+    final theme = TuiTheme.of(context);
+    return Container(
+      color: theme.surface,
+      padding: const EdgeInsets.symmetric(horizontal: 1),
+      child: const SizedBox(
+        height: 1,
+        child: Text(' Loading more...'),
+      ),
     );
   }
 }

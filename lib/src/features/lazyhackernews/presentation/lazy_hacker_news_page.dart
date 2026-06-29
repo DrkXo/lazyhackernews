@@ -34,6 +34,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     _cubit = context.read<LazyHackerNewsCubit>();
 
     _mouseService.onStoryTap = (index) => _cubit.selectAt(index);
+    _scrollService.controller.addListener(_onScroll);
 
     _inputService.registerAll([
       KeyBinding(key: LogicalKey.escape, action: () { shutdownApp(); return true; }),
@@ -147,8 +148,18 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     }
   }
 
+  void _onScroll() {
+    final state = _cubit.state;
+    if (state.isLoadingMore || !state.hasMore) return;
+    final controller = _scrollService.controller;
+    if (controller.offset >= controller.maxScrollExtent - 5) {
+      _cubit.loadMore();
+    }
+  }
+
   @override
   void dispose() {
+    _scrollService.controller.removeListener(_onScroll);
     _scrollService.dispose();
     super.dispose();
   }
