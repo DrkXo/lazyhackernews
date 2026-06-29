@@ -23,7 +23,18 @@ class Comment {
 
   String get displayText {
     if (isDeleted || isDead) return '[removed]';
-    final stripped = text.replaceAll(RegExp(r'<[^>]*>'), '')
+
+    // Extract and format links from <a> tags first
+    var result = text.replaceAllMapped(
+      RegExp(r'<a\s+href="([^"]+)"[^>]*>(.*?)</a>', caseSensitive: false),
+      (m) => '${m[2]} [${m[1]}]',
+    );
+
+    // Strip remaining HTML tags
+    result = result.replaceAll(RegExp(r'<[^>]*>'), '');
+
+    // Decode HTML entities
+    result = result
         .replaceAll('&amp;', '&')
         .replaceAll('&lt;', '<')
         .replaceAll('&gt;', '>')
@@ -31,7 +42,8 @@ class Comment {
         .replaceAll('&#39;', "'")
         .replaceAll('&quot;', '"')
         .trim();
-    return stripped;
+
+    return result;
   }
 
   String get oneLineText {

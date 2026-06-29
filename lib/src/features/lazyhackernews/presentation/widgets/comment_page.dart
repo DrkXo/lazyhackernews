@@ -374,8 +374,6 @@ class _CommentPageState extends State<CommentPage> {
     required VoidCallback onTap,
     required TuiThemeData theme,
   }) {
-    final bgColor = isSelected ? theme.primary.withOpacity(0.15) : null;
-
     final selectMark = isSelected ? '\u25B6 ' : '  ';
     final collapseMark = hasChildren
         ? (isCollapsed ? ' \u25B6 ' : ' \u25BC ')
@@ -388,7 +386,6 @@ class _CommentPageState extends State<CommentPage> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: bgColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -425,27 +422,36 @@ class _CommentPageState extends State<CommentPage> {
             if (!comment.isDeleted && !comment.isDead)
               isCollapsed
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Text(
-                        '($hiddenCount replies)',
-                        style: TextStyle(
-                          color: theme.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Row(
+                        children: [
+                          Text(
+                            prefix,
+                            style: TextStyle(color: theme.outline.withOpacity(0.6)),
+                          ),
+                          Text(
+                            '($hiddenCount replies)',
+                            style: TextStyle(
+                              color: theme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     )
-                  : _buildText(comment.displayText, theme),
+                  : _buildText(comment.displayText),
           ],
         ),
       ),
     );
   }
 
-  Component _buildText(String text, TuiThemeData theme) {
-    if (text.isEmpty) return SizedBox();
+  Component _buildText(String text) {
+    if (text.isEmpty) return const SizedBox();
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
-      child: Text(text, style: TextStyle(color: theme.outline)),
+      padding: const EdgeInsets.only(left: 6),
+      child: Text(text),
     );
   }
+
 }
