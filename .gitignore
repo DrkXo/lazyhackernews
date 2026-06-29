@@ -8,4 +8,4 @@
 # Freezed & json_serializable generated files
 *.g.dart
 *.freezed.dart
-build/*
+build/
