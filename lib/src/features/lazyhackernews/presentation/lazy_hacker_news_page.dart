@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:get_it/get_it.dart';
 import 'package:nocterm/nocterm.dart';
 import 'package:nocterm_bloc/nocterm_bloc.dart';
@@ -36,16 +34,16 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     _mouseService.onStoryTap = (index) => _cubit.selectAt(index);
 
     _inputService.registerAll([
-      KeyBinding(key: LogicalKey.escape, action: () => exit(0)),
+      KeyBinding(key: LogicalKey.escape, action: () { shutdownApp(); return true; }),
       KeyBinding(
         key: LogicalKey.keyQ,
         predicate: (e) => !e.isControlPressed,
-        action: () => exit(0),
+        action: () { shutdownApp(); return true; },
       ),
       KeyBinding(
         key: LogicalKey.keyQ,
         predicate: (e) => e.isControlPressed,
-        action: () => exit(0),
+        action: () { shutdownApp(); return true; },
       ),
       KeyBinding(
         key: LogicalKey.keyJ,
