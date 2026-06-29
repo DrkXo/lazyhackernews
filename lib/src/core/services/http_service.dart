@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 
 import '../error/exceptions.dart';
 
@@ -15,14 +18,23 @@ class HttpService {
             contentType: 'application/json',
           ),
         ) {
+    final cacheDir = _cacheDirectory();
+    cacheDir.createSync(recursive: true);
     _dio.interceptors.add(
       DioCacheInterceptor(
         options: CacheOptions(
-          store: MemCacheStore(),
+          store: HiveCacheStore(cacheDir.path),
           maxStale: const Duration(minutes: 30),
         ),
       ),
     );
+  }
+
+  Directory _cacheDirectory() {
+    final home = Platform.environment['HOME'] ?? '/tmp';
+    final xdgCache = Platform.environment['XDG_CACHE_HOME'];
+    final base = xdgCache ?? '$home/.cache';
+    return Directory('$base/lazyhackernews');
   }
 
   Future<List<dynamic>> getList(String path) async {
