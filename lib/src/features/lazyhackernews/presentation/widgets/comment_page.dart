@@ -8,11 +8,9 @@ import '../../domain/usecases/fetch_comments_usecase.dart';
 
 class CommentPage extends StatefulComponent {
   final Story story;
-  final VoidCallback onBack;
 
   const CommentPage({
     required this.story,
-    required this.onBack,
     super.key,
   });
 
@@ -260,7 +258,7 @@ class _CommentPageState extends State<CommentPage> {
         if (key == LogicalKey.escape ||
             key == LogicalKey.keyQ ||
             key == LogicalKey.arrowLeft) {
-          component.onBack();
+          Navigator.of(context).pop();
           return true;
         }
         if (key == LogicalKey.keyJ) {
