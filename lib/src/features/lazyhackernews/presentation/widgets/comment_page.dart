@@ -153,9 +153,9 @@ class _CommentPageState extends State<CommentPage> {
     return buf.toString();
   }
 
-  int _textLines(String text) {
+  int _textLines(String text, int indent) {
     if (text.isEmpty) return 0;
-    final w = _termWidth - 6;
+    final w = _termWidth - indent;
     if (w <= 0) return 1;
     final words = text.split(' ');
     int lines = 1;
@@ -175,7 +175,26 @@ class _CommentPageState extends State<CommentPage> {
     final c = _comments[index];
     if (c.isDeleted || c.isDead) return 1;
     if (_collapsed.contains(c.id)) return 1;
-    return 1 + _textLines(c.displayText);
+    final indent = _commentIndent(index);
+    return 1 + _textLines(c.displayText, indent);
+  }
+
+  int _commentIndent(int index) {
+    final c = _comments[index];
+    final depth = c.depth;
+    final buf = StringBuffer();
+    for (int l = 0; l < depth; l++) {
+      buf.write(_hasMoreAtDepth(_comments, index, l + 1) ? '\u2502 ' : '  ');
+    }
+    if (depth > 0 || index > 0) {
+      buf.write(
+        _hasMoreAtDepth(_comments, index, depth)
+            ? '\u251c\u2500\u2500 '
+            : '\u2514\u2500\u2500 ',
+      );
+    }
+    final prefix = buf.toString();
+    return 2 + prefix.length + (_hasChildren(index) ? 4 : 3);
   }
 
   double _offsetForPos(int visiblePos, List<int> visible) {
@@ -383,9 +402,12 @@ class _CommentPageState extends State<CommentPage> {
         ? theme.outline
         : theme.secondary;
 
+    final textIndent = 2 + prefix.length + (hasChildren ? 4 : 3);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        padding: const EdgeInsets.only(bottom: 1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -439,17 +461,17 @@ class _CommentPageState extends State<CommentPage> {
                         ],
                       ),
                     )
-                  : _buildText(comment.displayText),
+                  : _buildText(comment.displayText, textIndent),
           ],
         ),
       ),
     );
   }
 
-  Component _buildText(String text) {
+  Component _buildText(String text, int indent) {
     if (text.isEmpty) return const SizedBox();
     return Padding(
-      padding: const EdgeInsets.only(left: 6),
+      padding: EdgeInsets.only(left: indent.toDouble()),
       child: Text(text),
     );
   }
