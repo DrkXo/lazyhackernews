@@ -33,6 +33,8 @@ class Comment {
         .replaceAll('&gt;', '>')
         .replaceAll('&#x27;', "'")
         .replaceAll('&#39;', "'")
+        .replaceAll('&#x2F;', '/')
+        .replaceAll('&#47;', '/')
         .replaceAll('&quot;', '"');
 
     // Format links: avoid redundancy when text == URL
