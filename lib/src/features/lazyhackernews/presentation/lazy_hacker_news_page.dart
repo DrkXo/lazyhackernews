@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:get_it/get_it.dart';
 import 'package:nocterm/nocterm.dart';
 import 'package:nocterm_bloc/nocterm_bloc.dart';
 
+import '../../../core/services/input_service.dart';
+import '../../../core/services/mouse_service.dart';
+import '../../../core/services/scroll_service.dart';
 import '../data/models/models.dart';
 import 'cubit/lazy_hacker_news_cubit.dart';
 
@@ -15,58 +19,127 @@ class LazyHackerNews extends StatefulComponent {
 
 class _LazyHackerNewsState extends State<LazyHackerNews> {
   late final LazyHackerNewsCubit _cubit;
+  final _inputService = GetIt.I<InputService>();
+  final _scrollService = GetIt.I<ScrollService>();
+  final _mouseService = GetIt.I<MouseService>();
+  int _prevSelectedIndex = -1;
 
   @override
   void initState() {
     super.initState();
     _cubit = context.read<LazyHackerNewsCubit>();
+
+    _mouseService.onStoryTap = (index) {
+      _cubit.selectAt(index);
+    };
+
+    _inputService.registerAll([
+      KeyBinding(
+        key: LogicalKey.escape,
+        action: () => exit(0),
+      ),
+      KeyBinding(
+        key: LogicalKey.keyQ,
+        predicate: (e) => !e.isControlPressed,
+        action: () => exit(0),
+      ),
+      KeyBinding(
+        key: LogicalKey.keyQ,
+        predicate: (e) => e.isControlPressed,
+        action: () => exit(0),
+      ),
+      KeyBinding(
+        key: LogicalKey.keyJ,
+        action: () {
+          _cubit.selectNext();
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.arrowDown,
+        action: () {
+          _cubit.selectNext();
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.keyK,
+        action: () {
+          _cubit.selectPrevious();
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.arrowUp,
+        action: () {
+          _cubit.selectPrevious();
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.keyR,
+        action: () {
+          _cubit.refresh();
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.digit1,
+        action: () {
+          _cubit.setCategory(FeedType.top);
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.digit2,
+        action: () {
+          _cubit.setCategory(FeedType.new_);
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.digit3,
+        action: () {
+          _cubit.setCategory(FeedType.ask);
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.digit4,
+        action: () {
+          _cubit.setCategory(FeedType.show);
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.digit5,
+        action: () {
+          _cubit.setCategory(FeedType.jobs);
+          return true;
+        },
+      ),
+    ]);
+  }
+
+  void _onStateChanged(LazyHackerNewsState state) {
+    if (_prevSelectedIndex != state.selectedIndex) {
+      _prevSelectedIndex = state.selectedIndex;
+      _scrollToSelected();
+    }
+  }
+
+  void _scrollToSelected() {
+    _scrollService.scrollToIndex(_cubit.state.selectedIndex);
+  }
+
+  @override
+  void dispose() {
+    _scrollService.dispose();
+    super.dispose();
   }
 
   bool _handleKeyEvent(KeyboardEvent event) {
-    if (event.logicalKey == LogicalKey.escape ||
-        (event.isControlPressed && event.logicalKey == LogicalKey.keyQ) ||
-        (event.logicalKey == LogicalKey.keyQ && !event.isControlPressed)) {
-      exit(0);
-    }
-
-    if (event.logicalKey == LogicalKey.keyJ ||
-        event.logicalKey == LogicalKey.arrowDown) {
-      _cubit.selectNext();
-      return true;
-    }
-    if (event.logicalKey == LogicalKey.keyK ||
-        event.logicalKey == LogicalKey.arrowUp) {
-      _cubit.selectPrevious();
-      return true;
-    }
-
-    if (event.logicalKey == LogicalKey.keyR) {
-      _cubit.refresh();
-      return true;
-    }
-
-    if (event.logicalKey == LogicalKey.digit1) {
-      _cubit.setCategory(FeedType.top);
-      return true;
-    }
-    if (event.logicalKey == LogicalKey.digit2) {
-      _cubit.setCategory(FeedType.new_);
-      return true;
-    }
-    if (event.logicalKey == LogicalKey.digit3) {
-      _cubit.setCategory(FeedType.ask);
-      return true;
-    }
-    if (event.logicalKey == LogicalKey.digit4) {
-      _cubit.setCategory(FeedType.show);
-      return true;
-    }
-    if (event.logicalKey == LogicalKey.digit5) {
-      _cubit.setCategory(FeedType.jobs);
-      return true;
-    }
-
-    return false;
+    return _inputService.handle(event);
   }
 
   @override
@@ -76,6 +149,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
       onKeyEvent: _handleKeyEvent,
       child: BlocBuilder<LazyHackerNewsCubit, LazyHackerNewsState>(
         builder: (context, state) {
+          _onStateChanged(state);
           return Container(
             decoration: BoxDecoration(
               border: BoxBorder.all(color: Colors.gray),
@@ -173,17 +247,20 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     }
 
     if (state.stories.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'No stories. Press r to refresh.',
-          style: TextStyle(color: Colors.gray),
+          state.error ?? 'No stories. Press r to refresh.',
+          style: TextStyle(
+            color: state.error != null ? Colors.red : Colors.gray,
+          ),
         ),
       );
     }
 
     return ListView.builder(
-      itemCount: state.stories.length,
+      controller: _scrollService.controller,
       keyboardScrollable: false,
+      itemCount: state.stories.length,
       itemBuilder: (context, index) {
         final story = state.stories[index];
         final isSelected = index == state.selectedIndex;
@@ -199,7 +276,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
         ? Colors.yellow
         : Colors.gray;
 
-    return Container(
+    final row = Container(
       color: isSelected ? Colors.blue.withOpacity(0.3) : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 1),
@@ -228,6 +305,11 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
           ),
         ),
       ),
+    );
+
+    return GestureDetector(
+      onTap: () => _mouseService.onStoryTapped(index),
+      child: row,
     );
   }
 
@@ -261,11 +343,13 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
 
   Component _buildDetailContent(LazyHackerNewsState state) {
     if (state.stories.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(1),
+      return Padding(
+        padding: const EdgeInsets.all(1),
         child: Text(
-          'Select a story to view details',
-          style: TextStyle(color: Colors.gray),
+          state.error ?? 'Select a story to view details',
+          style: TextStyle(
+            color: state.error != null ? Colors.red : Colors.gray,
+          ),
         ),
       );
     }
@@ -311,10 +395,16 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
             ),
           ),
           const SizedBox(height: 1),
-          const Text(
-            '(comments not yet loaded)',
-            style: TextStyle(color: Colors.gray),
-          ),
+          if (state.error != null)
+            Text(
+              state.error!,
+              style: const TextStyle(color: Colors.red),
+            )
+          else
+            const Text(
+              '(comments not yet loaded)',
+              style: TextStyle(color: Colors.gray),
+            ),
         ],
       ),
     );

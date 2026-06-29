@@ -22,6 +22,12 @@ class LazyHackerNewsCubit extends Cubit<LazyHackerNewsState> {
     emit(state.copyWith(selectedIndex: next));
   }
 
+  void selectAt(int index) {
+    final stories = state.stories;
+    if (stories.isEmpty) return;
+    emit(state.copyWith(selectedIndex: index.clamp(0, stories.length - 1)));
+  }
+
   void selectPrevious() {
     final stories = state.stories;
     if (stories.isEmpty) return;

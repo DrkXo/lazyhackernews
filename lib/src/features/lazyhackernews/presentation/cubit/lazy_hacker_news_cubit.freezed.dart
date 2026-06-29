@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LazyHackerNewsState {
 
- List<Story> get stories; int get selectedIndex; Category get category; bool get isLoading; String? get error;
+ List<Story> get stories; int get selectedIndex; FeedType get category; bool get isLoading; String? get error;
 /// Create a copy of LazyHackerNewsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,12 +26,12 @@ $LazyHackerNewsStateCopyWith<LazyHackerNewsState> get copyWith => _$LazyHackerNe
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LazyHackerNewsState&&const DeepCollectionEquality().equals(other.stories, stories)&&(identical(other.selectedIndex, selectedIndex) || other.selectedIndex == selectedIndex)&&const DeepCollectionEquality().equals(other.category, category)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LazyHackerNewsState&&const DeepCollectionEquality().equals(other.stories, stories)&&(identical(other.selectedIndex, selectedIndex) || other.selectedIndex == selectedIndex)&&(identical(other.category, category) || other.category == category)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(stories),selectedIndex,const DeepCollectionEquality().hash(category),isLoading,error);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(stories),selectedIndex,category,isLoading,error);
 
 @override
 String toString() {
@@ -46,7 +46,7 @@ abstract mixin class $LazyHackerNewsStateCopyWith<$Res>  {
   factory $LazyHackerNewsStateCopyWith(LazyHackerNewsState value, $Res Function(LazyHackerNewsState) _then) = _$LazyHackerNewsStateCopyWithImpl;
 @useResult
 $Res call({
- List<Story> stories, int selectedIndex, Category category, bool isLoading, String? error
+ List<Story> stories, int selectedIndex, FeedType category, bool isLoading, String? error
 });
 
 
@@ -63,12 +63,12 @@ class _$LazyHackerNewsStateCopyWithImpl<$Res>
 
 /// Create a copy of LazyHackerNewsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? stories = null,Object? selectedIndex = null,Object? category = freezed,Object? isLoading = null,Object? error = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? stories = null,Object? selectedIndex = null,Object? category = null,Object? isLoading = null,Object? error = freezed,}) {
   return _then(LazyHackerNewsState(
 stories: null == stories ? _self.stories : stories // ignore: cast_nullable_to_non_nullable
 as List<Story>,selectedIndex: null == selectedIndex ? _self.selectedIndex : selectedIndex // ignore: cast_nullable_to_non_nullable
-as int,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
-as Category,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as int,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as FeedType,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -155,7 +155,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Story> stories,  int selectedIndex,  Category category,  bool isLoading,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Story> stories,  int selectedIndex,  FeedType category,  bool isLoading,  String? error)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LazyHackerNewsState() when $default != null:
 return $default(_that.stories,_that.selectedIndex,_that.category,_that.isLoading,_that.error);case _:
@@ -176,7 +176,7 @@ return $default(_that.stories,_that.selectedIndex,_that.category,_that.isLoading
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Story> stories,  int selectedIndex,  Category category,  bool isLoading,  String? error)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Story> stories,  int selectedIndex,  FeedType category,  bool isLoading,  String? error)  $default,) {final _that = this;
 switch (_that) {
 case _LazyHackerNewsState():
 return $default(_that.stories,_that.selectedIndex,_that.category,_that.isLoading,_that.error);case _:
@@ -196,7 +196,7 @@ return $default(_that.stories,_that.selectedIndex,_that.category,_that.isLoading
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Story> stories,  int selectedIndex,  Category category,  bool isLoading,  String? error)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Story> stories,  int selectedIndex,  FeedType category,  bool isLoading,  String? error)?  $default,) {final _that = this;
 switch (_that) {
 case _LazyHackerNewsState() when $default != null:
 return $default(_that.stories,_that.selectedIndex,_that.category,_that.isLoading,_that.error);case _:
@@ -211,7 +211,7 @@ return $default(_that.stories,_that.selectedIndex,_that.category,_that.isLoading
 
 
 class _LazyHackerNewsState implements LazyHackerNewsState {
-  const _LazyHackerNewsState({ List<Story> stories = const [], this.selectedIndex = 0, this.category = Category.top, this.isLoading = false, this.error}): _stories = stories;
+  const _LazyHackerNewsState({ List<Story> stories = const [], this.selectedIndex = 0, this.category = FeedType.top, this.isLoading = false, this.error}): _stories = stories;
   
 
  final  List<Story> _stories;
@@ -222,7 +222,7 @@ class _LazyHackerNewsState implements LazyHackerNewsState {
 }
 
 @override@JsonKey() final  int selectedIndex;
-@override@JsonKey() final  Category category;
+@override@JsonKey() final  FeedType category;
 @override@JsonKey() final  bool isLoading;
 @override final  String? error;
 
@@ -236,12 +236,12 @@ _$LazyHackerNewsStateCopyWith<_LazyHackerNewsState> get copyWith => __$LazyHacke
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LazyHackerNewsState&&const DeepCollectionEquality().equals(other._stories, _stories)&&(identical(other.selectedIndex, selectedIndex) || other.selectedIndex == selectedIndex)&&const DeepCollectionEquality().equals(other.category, category)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LazyHackerNewsState&&const DeepCollectionEquality().equals(other._stories, _stories)&&(identical(other.selectedIndex, selectedIndex) || other.selectedIndex == selectedIndex)&&(identical(other.category, category) || other.category == category)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.error, error) || other.error == error));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_stories),selectedIndex,const DeepCollectionEquality().hash(category),isLoading,error);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_stories),selectedIndex,category,isLoading,error);
 
 @override
 String toString() {
@@ -256,7 +256,7 @@ abstract mixin class _$LazyHackerNewsStateCopyWith<$Res> implements $LazyHackerN
   factory _$LazyHackerNewsStateCopyWith(_LazyHackerNewsState value, $Res Function(_LazyHackerNewsState) _then) = __$LazyHackerNewsStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<Story> stories, int selectedIndex, Category category, bool isLoading, String? error
+ List<Story> stories, int selectedIndex, FeedType category, bool isLoading, String? error
 });
 
 
@@ -273,12 +273,12 @@ class __$LazyHackerNewsStateCopyWithImpl<$Res>
 
 /// Create a copy of LazyHackerNewsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? stories = null,Object? selectedIndex = null,Object? category = freezed,Object? isLoading = null,Object? error = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? stories = null,Object? selectedIndex = null,Object? category = null,Object? isLoading = null,Object? error = freezed,}) {
   return _then(_LazyHackerNewsState(
 stories: null == stories ? _self._stories : stories // ignore: cast_nullable_to_non_nullable
 as List<Story>,selectedIndex: null == selectedIndex ? _self.selectedIndex : selectedIndex // ignore: cast_nullable_to_non_nullable
-as int,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
-as Category,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as int,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as FeedType,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
