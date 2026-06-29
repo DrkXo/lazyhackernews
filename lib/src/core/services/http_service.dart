@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 import '../error/exceptions.dart';
 
@@ -13,7 +14,16 @@ class HttpService {
             receiveTimeout: const Duration(seconds: 15),
             contentType: 'application/json',
           ),
-        );
+        ) {
+    _dio.interceptors.add(
+      DioCacheInterceptor(
+        options: CacheOptions(
+          store: MemCacheStore(),
+          maxStale: const Duration(minutes: 30),
+        ),
+      ),
+    );
+  }
 
   Future<List<dynamic>> getList(String path) async {
     try {

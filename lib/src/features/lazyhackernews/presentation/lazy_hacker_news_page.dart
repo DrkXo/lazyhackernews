@@ -7,6 +7,7 @@ import '../../../core/services/mouse_service.dart';
 import '../../../core/services/scroll_service.dart';
 import '../data/models/models.dart';
 import 'cubit/lazy_hacker_news_cubit.dart';
+import 'widgets/comment_page.dart';
 import 'widgets/detail_panel.dart';
 import 'widgets/header_bar.dart';
 import 'widgets/status_bar.dart';
@@ -25,6 +26,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
   final _scrollService = GetIt.I<ScrollService>();
   final _mouseService = GetIt.I<MouseService>();
   int _prevSelectedIndex = -1;
+  Story? _commentTarget;
 
   @override
   void initState() {
@@ -115,7 +117,27 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
           return true;
         },
       ),
+      KeyBinding(
+        key: LogicalKey.enter,
+        action: () {
+          _openComments();
+          return true;
+        },
+      ),
+      KeyBinding(
+        key: LogicalKey.arrowRight,
+        action: () {
+          _openComments();
+          return true;
+        },
+      ),
     ]);
+  }
+
+  void _openComments() {
+    final stories = _cubit.state.stories;
+    if (stories.isEmpty) return;
+    setState(() => _commentTarget = stories[_cubit.state.selectedIndex]);
   }
 
   void _onStateChanged(LazyHackerNewsState state) {
@@ -133,6 +155,13 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
 
   @override
   Component build(BuildContext context) {
+    if (_commentTarget != null) {
+      return CommentPage(
+        story: _commentTarget!,
+        onBack: () => setState(() => _commentTarget = null),
+      );
+    }
+
     return Focusable(
       focused: true,
       onKeyEvent: (event) => _inputService.handle(event),

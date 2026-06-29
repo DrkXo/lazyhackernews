@@ -40,9 +40,6 @@ Future<void> configureDependencies() async {
   );
 
   getIt.registerSingleton<LazyHackerNewsCubit>(
-    LazyHackerNewsCubit(
-      fetchStories: getIt<FetchStoriesUseCase>(),
-      fetchComments: getIt<FetchCommentsUseCase>(),
-    ),
+    LazyHackerNewsCubit(fetchStories: getIt<FetchStoriesUseCase>()),
   );
 }

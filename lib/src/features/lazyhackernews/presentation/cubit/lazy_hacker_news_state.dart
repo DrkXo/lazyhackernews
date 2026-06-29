@@ -7,8 +7,6 @@ abstract class LazyHackerNewsState with _$LazyHackerNewsState {
     @Default(0) int selectedIndex,
     @Default(FeedType.top) FeedType category,
     @Default(false) bool isLoading,
-    @Default([]) List<Comment> comments,
-    @Default(false) bool isLoadingComments,
     String? error,
   }) = _LazyHackerNewsState;
 }
