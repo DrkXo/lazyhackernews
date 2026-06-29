@@ -36,8 +36,9 @@ class HackerNewsRepositoryImpl implements HackerNewsRepository {
     try {
       final story = await _dataSource.fetchItem(storyId);
       if (story.kids.isEmpty) return const Right([]);
-      final comments = await _buildTree(story.kids, 0);
-      return Right(comments.take(50).toList());
+      final cache = <int, Item>{};
+      final comments = await _buildTree(story.kids, 0, cache);
+      return Right(comments.take(100).toList());
     } on NetworkException catch (e) {
       return Left(NetworkFailure(message: e.message));
     } on ApiException catch (e) {
@@ -49,14 +50,23 @@ class HackerNewsRepositoryImpl implements HackerNewsRepository {
     }
   }
 
-  Future<List<Comment>> _buildTree(List<int> ids, int depth) async {
-    if (ids.isEmpty || depth > 5) return [];
-    final items = await _dataSource.fetchItems(ids.take(30).toList());
+  Future<List<Comment>> _buildTree(List<int> ids, int depth, Map<int, Item> cache) async {
+    if (ids.isEmpty || depth >= 10) return [];
+
+    final toFetch = ids.where((id) => !cache.containsKey(id)).toList();
+    if (toFetch.isNotEmpty) {
+      final items = await _dataSource.fetchItems(toFetch);
+      for (final item in items) {
+        cache[item.id] = item;
+      }
+    }
 
     final comments = <Comment>[];
     final subtrees = <Future<List<Comment>>>[];
 
-    for (final item in items) {
+    for (final id in ids) {
+      final item = cache[id];
+      if (item == null || comments.length >= 100) continue;
       comments.add(Comment(
         id: item.id,
         author: item.by ?? '?',
@@ -67,19 +77,20 @@ class HackerNewsRepositoryImpl implements HackerNewsRepository {
         isDeleted: item.deleted,
         isDead: item.dead,
       ));
-      if (item.kids.isNotEmpty && depth < 5) {
-        subtrees.add(_buildTree(item.kids, depth + 1));
+      if (item.kids.isNotEmpty && depth < 9) {
+        subtrees.add(_buildTree(item.kids, depth + 1, cache));
       }
     }
 
     if (subtrees.isNotEmpty) {
       final children = await Future.wait(subtrees);
       for (final childList in children) {
+        if (comments.length >= 100) break;
         comments.addAll(childList);
       }
     }
 
-    return comments;
+    return comments.take(100).toList();
   }
 
   Story _toStory(Item item) {

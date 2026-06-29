@@ -24,26 +24,41 @@ class Comment {
   String get displayText {
     if (isDeleted || isDead) return '[removed]';
 
-    // Extract and format links from <a> tags first
-    var result = text.replaceAllMapped(
-      RegExp(r'<a\s+href="([^"]+)"[^>]*>(.*?)</a>', caseSensitive: false),
-      (m) => '${m[2]} [${m[1]}]',
-    );
+    var result = text;
 
-    // Strip remaining HTML tags
-    result = result.replaceAll(RegExp(r'<[^>]*>'), '');
-
-    // Decode HTML entities
+    // Decode HTML entities first so URLs are clean
     result = result
         .replaceAll('&amp;', '&')
         .replaceAll('&lt;', '<')
         .replaceAll('&gt;', '>')
         .replaceAll('&#x27;', "'")
         .replaceAll('&#39;', "'")
-        .replaceAll('&quot;', '"')
-        .trim();
+        .replaceAll('&quot;', '"');
 
-    return result;
+    // Format links: avoid redundancy when text == URL
+    result = result.replaceAllMapped(
+      RegExp(r'<a\s+href="([^"]+)"[^>]*>(.*?)</a>', caseSensitive: false),
+      (m) {
+        final url = m[1]!;
+        final linkText = m[2]!.trim();
+        if (linkText.isEmpty || linkText == url) return url;
+        return '$linkText ($url)';
+      },
+    );
+
+    // Convert block/inline HTML to newlines for readability
+    result = result.replaceAll(RegExp(r'</?p>', caseSensitive: false), '\n');
+    result = result.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n');
+    result = result.replaceAll(RegExp(r'</?pre>', caseSensitive: false), '\n');
+    result = result.replaceAll(RegExp(r'</?code>', caseSensitive: false), '\n');
+
+    // Strip remaining HTML tags
+    result = result.replaceAll(RegExp(r'<[^>]*>'), '');
+
+    // Collapse multiple newlines
+    result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+
+    return result.trim();
   }
 
   String get oneLineText {

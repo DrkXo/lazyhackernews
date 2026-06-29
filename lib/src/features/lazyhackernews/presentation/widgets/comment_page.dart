@@ -141,7 +141,7 @@ class _CommentPageState extends State<CommentPage> {
     final depth = comments[index].depth;
     final buf = StringBuffer();
     for (int l = 0; l < depth; l++) {
-      buf.write(_hasMoreAtDepth(comments, index, l) ? '\u2502 ' : '  ');
+      buf.write(_hasMoreAtDepth(comments, index, l + 1) ? '\u2502 ' : '  ');
     }
     if (depth > 0 || index > 0) {
       buf.write(
