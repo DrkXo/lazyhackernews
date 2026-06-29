@@ -9,6 +9,7 @@ import '../services/scroll_service.dart';
 import '../../features/lazyhackernews/data/implements/hacker_news_repository_impl.dart';
 import '../../features/lazyhackernews/data/sources/hacker_news_remote_data_source.dart';
 import '../../features/lazyhackernews/domain/repositories/hacker_news_repository.dart';
+import '../../features/lazyhackernews/domain/usecases/fetch_comments_usecase.dart';
 import '../../features/lazyhackernews/domain/usecases/fetch_stories_usecase.dart';
 import '../../features/lazyhackernews/presentation/cubit/lazy_hacker_news_cubit.dart';
 
@@ -34,7 +35,14 @@ Future<void> configureDependencies() async {
     FetchStoriesUseCase(repository: getIt<HackerNewsRepository>()),
   );
 
+  getIt.registerSingleton<FetchCommentsUseCase>(
+    FetchCommentsUseCase(repository: getIt<HackerNewsRepository>()),
+  );
+
   getIt.registerSingleton<LazyHackerNewsCubit>(
-    LazyHackerNewsCubit(fetchStories: getIt<FetchStoriesUseCase>()),
+    LazyHackerNewsCubit(
+      fetchStories: getIt<FetchStoriesUseCase>(),
+      fetchComments: getIt<FetchCommentsUseCase>(),
+    ),
   );
 }

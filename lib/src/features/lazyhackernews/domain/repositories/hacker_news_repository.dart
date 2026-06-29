@@ -5,4 +5,6 @@ import '../../data/models/models.dart';
 
 abstract class HackerNewsRepository {
   Future<Either<Failure, List<Story>>> fetchStories(FeedType feed);
+
+  Future<Either<Failure, List<Comment>>> fetchComments(int storyId);
 }

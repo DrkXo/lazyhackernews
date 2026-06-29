@@ -1,5 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 
+import '../../data/models/models.dart';
 import '../cubit/lazy_hacker_news_cubit.dart';
 
 class DetailPanel extends StatelessComponent {
@@ -54,6 +55,7 @@ class DetailPanel extends StatelessComponent {
     }
 
     final story = state.stories[state.selectedIndex];
+    final commentCount = state.comments.length;
 
     return Padding(
       padding: const EdgeInsets.all(1),
@@ -85,25 +87,78 @@ class DetailPanel extends StatelessComponent {
           ],
           const SizedBox(height: 1),
           Divider(height: 1, color: theme.outline),
-          const SizedBox(height: 1),
-          Text(
-            'Comments',
-            style: TextStyle(
-              color: theme.primary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 1),
-          if (state.error != null)
-            Text(
-              state.error!,
-              style: TextStyle(color: theme.error),
+          if (state.isLoadingComments)
+            Padding(
+              padding: const EdgeInsets.only(top: 1),
+              child: Text(
+                'Loading comments...',
+                style: TextStyle(color: theme.outline),
+              ),
+            )
+          else if (state.comments.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 1),
+              child: Text(
+                state.error ?? 'No comments',
+                style: state.error != null
+                    ? TextStyle(color: theme.error)
+                    : TextStyle(color: theme.outline),
+              ),
             )
           else
-            Text(
-              '(comments not yet loaded)',
-              style: TextStyle(color: theme.outline),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: ListView.builder(
+                  keyboardScrollable: false,
+                  itemCount: commentCount,
+                  itemBuilder: (context, index) {
+                    final comment = state.comments[index];
+                    return _commentRow(comment, theme);
+                  },
+                ),
+              ),
             ),
+        ],
+      ),
+    );
+  }
+
+  Component _commentRow(Comment comment, TuiThemeData theme) {
+    final indent = '  ' * comment.depth;
+    final prefix = comment.isDeleted || comment.isDead
+        ? '[removed]'
+        : '${comment.author} (${comment.points})';
+    final text = comment.isDeleted || comment.isDead
+        ? ''
+        : comment.oneLineText;
+    return Container(
+      height: 1,
+      child: Row(
+        children: [
+          Text(
+            indent,
+            style: TextStyle(color: theme.outline),
+          ),
+          Text(
+            prefix,
+            style: TextStyle(
+              color: comment.isDeleted || comment.isDead
+                  ? theme.outline
+                  : theme.secondary,
+            ),
+          ),
+          if (text.isNotEmpty) ...[
+            const Text(' '),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: theme.outline),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part '../../domain/entites/comment.dart';
 part '../../domain/entites/feed_type.dart';
 part '../../domain/entites/item.dart';
 part '../../domain/entites/item_type.dart';
