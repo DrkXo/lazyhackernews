@@ -1,7 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 
 import '../../data/models/models.dart';
-import 'theme.dart';
 
 class StatusBar extends StatelessComponent {
   final FeedType category;
@@ -10,23 +9,24 @@ class StatusBar extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return Container(
-      color: AppTheme.headerBg,
+      color: theme.surface,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 1),
         child: SizedBox(
           height: 1,
           child: Row(
             children: [
-              _tab('1', 'Top', category == FeedType.top),
-              _tab('2', 'New', category == FeedType.new_),
-              _tab('3', 'Ask', category == FeedType.ask),
-              _tab('4', 'Show', category == FeedType.show),
-              _tab('5', 'Jobs', category == FeedType.jobs),
+              _tab(context, '1', 'Top', category == FeedType.top),
+              _tab(context, '2', 'New', category == FeedType.new_),
+              _tab(context, '3', 'Ask', category == FeedType.ask),
+              _tab(context, '4', 'Show', category == FeedType.show),
+              _tab(context, '5', 'Jobs', category == FeedType.jobs),
               const Spacer(),
-              const Text(
+              Text(
                 'r:refresh  q:quit',
-                style: TextStyle(color: AppTheme.muted),
+                style: TextStyle(color: theme.outline),
               ),
             ],
           ),
@@ -35,13 +35,14 @@ class StatusBar extends StatelessComponent {
     );
   }
 
-  Component _tab(String key, String label, bool isActive) {
+  Component _tab(BuildContext context, String key, String label, bool isActive) {
+    final theme = TuiTheme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1),
       child: Text(
         '[$key]$label',
         style: TextStyle(
-          color: isActive ? AppTheme.tabActive : AppTheme.tabInactive,
+          color: isActive ? theme.primary : theme.outline,
           fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
         ),
       ),

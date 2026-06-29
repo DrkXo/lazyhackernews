@@ -1,7 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 
 import '../cubit/lazy_hacker_news_cubit.dart';
-import 'theme.dart';
 
 class DetailPanel extends StatelessComponent {
   final LazyHackerNewsState state;
@@ -10,36 +9,46 @@ class DetailPanel extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return Expanded(
       flex: 3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionHeader(' Details '),
-          Expanded(child: _content()),
+          _sectionHeader(context, ' Details '),
+          Expanded(child: _content(context, theme)),
         ],
       ),
     );
   }
 
-  Component _sectionHeader(String title) {
+  Component _sectionHeader(BuildContext context, String title) {
+    final theme = TuiTheme.of(context);
     return Container(
-      color: AppTheme.headerBg,
+      color: theme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 1),
       child: SizedBox(
         height: 1,
-        child: Text(title, style: AppTheme.sectionTitle),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: theme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
 
-  Component _content() {
+  Component _content(BuildContext context, TuiThemeData theme) {
     if (state.stories.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(1),
         child: Text(
           state.error ?? 'Select a story to view details',
-          style: state.error != null ? AppTheme.errorText : AppTheme.mutedText,
+          style: state.error != null
+              ? TextStyle(color: theme.error)
+              : TextStyle(color: theme.outline),
         ),
       );
     }
@@ -51,37 +60,49 @@ class DetailPanel extends StatelessComponent {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(story.title, style: AppTheme.bold),
+          Text(
+            story.title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 1),
           Text(
             'by ${story.author}',
-            style: const TextStyle(color: AppTheme.author),
+            style: TextStyle(color: theme.secondary),
           ),
           Text(
             '${story.points} points  |  ${story.commentCount} comments',
-            style: AppTheme.mutedText,
+            style: TextStyle(color: theme.outline),
           ),
           if (story.url != null) ...[
             const SizedBox(height: 1),
-            Text(story.url!, style: AppTheme.linkText),
+            Text(
+              story.url!,
+              style: TextStyle(
+                color: theme.primary,
+                decoration: TextDecoration.underline,
+              ),
+            ),
           ],
           const SizedBox(height: 1),
-          const Divider(height: 1, color: Colors.gray),
+          Divider(height: 1, color: theme.outline),
           const SizedBox(height: 1),
-          const Text(
+          Text(
             'Comments',
             style: TextStyle(
-              color: AppTheme.accent,
+              color: theme.primary,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 1),
           if (state.error != null)
-            Text(state.error!, style: AppTheme.errorText)
+            Text(
+              state.error!,
+              style: TextStyle(color: theme.error),
+            )
           else
-            const Text(
+            Text(
               '(comments not yet loaded)',
-              style: TextStyle(color: AppTheme.muted),
+              style: TextStyle(color: theme.outline),
             ),
         ],
       ),

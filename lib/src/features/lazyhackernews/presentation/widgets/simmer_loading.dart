@@ -35,47 +35,46 @@ class _SimmerLoadingState extends State<SimmerLoading> {
 
   @override
   Component build(BuildContext context) {
+    final theme = TuiTheme.of(context);
     final pattern = _frames[_frame];
     return Column(
       children: [
         const SizedBox(height: 1),
         Text(
           'Loading$pattern',
-          style: const TextStyle(color: Colors.gray),
+          style: TextStyle(color: theme.outline),
         ),
         ...List.generate(
           rowCount,
-          (i) => _skeletonRow(i),
+          (i) => _skeletonRow(i, theme),
         ),
       ],
     );
   }
 
-  Component _skeletonRow(int i) {
+  Component _skeletonRow(int i, TuiThemeData theme) {
     final width = 20 + (i * 7) % 40;
     final dots = '.' * width;
+    final muted = theme.outline.withOpacity(0.3);
     return Container(
-      color: i.isEven
-          ? const Color(0x0a0000ff)
-          : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 1),
         child: SizedBox(
           height: 1,
           child: Row(
             children: [
-              const Text('   ', style: TextStyle(color: Colors.gray)),
+              const Text('   '),
               Expanded(
                 child: Text(
                   dots,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: Color(0x33ffffff)),
+                  style: TextStyle(color: muted),
                 ),
               ),
               Text(
                 ' ..pts',
-                style: const TextStyle(color: Color(0x33ffffff)),
+                style: TextStyle(color: muted),
               ),
             ],
           ),

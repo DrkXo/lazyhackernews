@@ -1,7 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 
 import '../../data/models/models.dart';
-import 'theme.dart';
 
 class HeaderBar extends StatelessComponent {
   final FeedType category;
@@ -10,8 +9,9 @@ class HeaderBar extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return Container(
-      color: AppTheme.headerBg,
+      color: theme.surface,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 1),
         child: SizedBox(
@@ -21,19 +21,19 @@ class HeaderBar extends StatelessComponent {
               Text(
                 ' lazyhackernews ',
                 style: TextStyle(
-                  color: AppTheme.title,
+                  color: theme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const Spacer(),
               Text(
                 _categoryLabel(category),
-                style: const TextStyle(color: AppTheme.accent),
+                style: TextStyle(color: theme.secondary),
               ),
               const SizedBox(width: 2),
-              const Text(
+              Text(
                 'j/k:nav  q:quit',
-                style: TextStyle(color: AppTheme.muted),
+                style: TextStyle(color: theme.outline),
               ),
             ],
           ),

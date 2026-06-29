@@ -1,7 +1,12 @@
 import 'package:nocterm/nocterm.dart';
 
 import '../../data/models/models.dart';
-import 'theme.dart';
+
+Color _pointsColor(int points) {
+  if (points > 100) return Colors.green;
+  if (points > 50) return Colors.yellow;
+  return Colors.gray;
+}
 
 class StoryRow extends StatelessComponent {
   final Story story;
@@ -19,10 +24,12 @@ class StoryRow extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
-    final color = AppTheme.pointsColor(story.points);
+    final theme = TuiTheme.of(context);
+    final color = _pointsColor(story.points);
 
     final row = Container(
-      color: isSelected ? AppTheme.selection : null,
+      color:
+          isSelected ? theme.primary.withOpacity(0.3) : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 1),
         child: SizedBox(
@@ -32,7 +39,7 @@ class StoryRow extends StatelessComponent {
               Text(
                 isSelected ? ' \u25B6 ' : '   ',
                 style: TextStyle(
-                  color: isSelected ? AppTheme.tabActive : AppTheme.muted,
+                  color: isSelected ? theme.primary : theme.outline,
                 ),
               ),
               Expanded(

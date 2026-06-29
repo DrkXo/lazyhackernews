@@ -9,9 +9,12 @@ Future<void> main() async {
   await configureDependencies();
 
   runApp(
-    BlocProvider(
-      create: (context) => getIt<LazyHackerNewsCubit>(),
-      child: LazyHackerNews(),
+    TuiTheme(
+      data: TuiThemeData.gruvboxDark,
+      child: BlocProvider(
+        create: (context) => getIt<LazyHackerNewsCubit>(),
+        child: LazyHackerNews(),
+      ),
     ),
   );
 }

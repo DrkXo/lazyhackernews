@@ -4,7 +4,6 @@ import '../../../../core/services/scroll_service.dart';
 import '../cubit/lazy_hacker_news_cubit.dart';
 import 'simmer_loading.dart';
 import 'story_row.dart';
-import 'theme.dart';
 
 class StoryPanel extends StatelessComponent {
   final LazyHackerNewsState state;
@@ -20,30 +19,38 @@ class StoryPanel extends StatelessComponent {
 
   @override
   Component build(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return Expanded(
       flex: 2,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionHeader(' Stories '),
-          Expanded(child: _body()),
+          _sectionHeader(context, ' Stories '),
+          Expanded(child: _body(context, theme)),
         ],
       ),
     );
   }
 
-  Component _sectionHeader(String title) {
+  Component _sectionHeader(BuildContext context, String title) {
+    final theme = TuiTheme.of(context);
     return Container(
-      color: AppTheme.headerBg,
+      color: theme.surface,
       padding: const EdgeInsets.symmetric(horizontal: 1),
       child: SizedBox(
         height: 1,
-        child: Text(title, style: AppTheme.sectionTitle),
+        child: Text(
+          title,
+          style: TextStyle(
+            color: theme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
 
-  Component _body() {
+  Component _body(BuildContext context, TuiThemeData theme) {
     if (state.isLoading) {
       return const SimmerLoading();
     }
@@ -52,7 +59,9 @@ class StoryPanel extends StatelessComponent {
       return Center(
         child: Text(
           state.error ?? 'No stories. Press r to refresh.',
-          style: state.error != null ? AppTheme.errorText : AppTheme.mutedText,
+          style: state.error != null
+              ? TextStyle(color: theme.error)
+              : TextStyle(color: theme.outline),
         ),
       );
     }

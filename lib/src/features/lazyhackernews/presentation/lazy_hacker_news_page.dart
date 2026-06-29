@@ -13,7 +13,6 @@ import 'widgets/detail_panel.dart';
 import 'widgets/header_bar.dart';
 import 'widgets/status_bar.dart';
 import 'widgets/story_panel.dart';
-import 'widgets/theme.dart';
 
 class LazyHackerNews extends StatefulComponent {
   const LazyHackerNews({super.key});
@@ -142,15 +141,16 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
       child: BlocBuilder<LazyHackerNewsCubit, LazyHackerNewsState>(
         builder: (context, state) {
           _onStateChanged(state);
+          final theme = TuiTheme.of(context);
           return Container(
             decoration: BoxDecoration(
-              border: BoxBorder.all(color: AppTheme.border),
+              border: BoxBorder.all(color: theme.outline),
             ),
             margin: const EdgeInsets.all(1),
             child: Column(
               children: [
                 HeaderBar(category: state.category),
-                const Divider(height: 1, color: AppTheme.border),
+                Divider(height: 1, color: theme.outline),
                 Expanded(
                   child: Row(
                     children: [
@@ -159,12 +159,12 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
                         scrollService: _scrollService,
                         onStoryTap: (i) => _cubit.selectAt(i),
                       ),
-                      const VerticalDivider(width: 1, color: AppTheme.border),
+                      VerticalDivider(width: 1, color: theme.outline),
                       DetailPanel(state: state),
                     ],
                   ),
                 ),
-                const Divider(height: 1, color: AppTheme.border),
+                Divider(height: 1, color: theme.outline),
                 StatusBar(category: state.category),
               ],
             ),
