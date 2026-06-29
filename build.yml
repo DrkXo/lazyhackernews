@@ -1,0 +1,14 @@
+targets:
+  $default:
+    builders:
+      injectable_generator:injectable_builder:
+        enabled: true
+      json_serializable:
+        options:
+          checked: true
+          # optional extras:
+          explicit_to_json: true
+          any_map: true
+      envied_generator|envied:
+        options:
+          override: true

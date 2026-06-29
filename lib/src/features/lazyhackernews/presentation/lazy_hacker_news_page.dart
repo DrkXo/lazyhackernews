@@ -46,23 +46,23 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     }
 
     if (event.logicalKey == LogicalKey.digit1) {
-      _cubit.setCategory(Category.top);
+      _cubit.setCategory(FeedType.top);
       return true;
     }
     if (event.logicalKey == LogicalKey.digit2) {
-      _cubit.setCategory(Category.new_);
+      _cubit.setCategory(FeedType.new_);
       return true;
     }
     if (event.logicalKey == LogicalKey.digit3) {
-      _cubit.setCategory(Category.ask);
+      _cubit.setCategory(FeedType.ask);
       return true;
     }
     if (event.logicalKey == LogicalKey.digit4) {
-      _cubit.setCategory(Category.show);
+      _cubit.setCategory(FeedType.show);
       return true;
     }
     if (event.logicalKey == LogicalKey.digit5) {
-      _cubit.setCategory(Category.jobs);
+      _cubit.setCategory(FeedType.jobs);
       return true;
     }
 
@@ -329,11 +329,11 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
           height: 1,
           child: Row(
             children: [
-              _categoryTab('1', 'Top', state.category == Category.top),
-              _categoryTab('2', 'New', state.category == Category.new_),
-              _categoryTab('3', 'Ask', state.category == Category.ask),
-              _categoryTab('4', 'Show', state.category == Category.show),
-              _categoryTab('5', 'Jobs', state.category == Category.jobs),
+              _categoryTab('1', 'Top', state.category == FeedType.top),
+              _categoryTab('2', 'New', state.category == FeedType.new_),
+              _categoryTab('3', 'Ask', state.category == FeedType.ask),
+              _categoryTab('4', 'Show', state.category == FeedType.show),
+              _categoryTab('5', 'Jobs', state.category == FeedType.jobs),
               const Spacer(),
               const Text(
                 'r:refresh  q:quit',
@@ -359,18 +359,20 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     );
   }
 
-  String _categoryLabel(Category category) {
+  String _categoryLabel(FeedType category) {
     switch (category) {
-      case Category.top:
+      case FeedType.top:
         return 'Top';
-      case Category.new_:
+      case FeedType.new_:
         return 'New';
-      case Category.ask:
+      case FeedType.ask:
         return 'Ask';
-      case Category.show:
+      case FeedType.show:
         return 'Show';
-      case Category.jobs:
+      case FeedType.jobs:
         return 'Jobs';
+      case FeedType.best:
+        return 'Best';
     }
   }
 }

@@ -4,3 +4,7 @@
 
 # FVM Version Cache
 .fvm/
+
+# Freezed & json_serializable generated files
+*.g.dart
+*.freezed.dart

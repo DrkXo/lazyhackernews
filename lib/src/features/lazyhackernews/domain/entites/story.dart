@@ -1,7 +1,5 @@
 part of '../../data/models/models.dart';
 
-enum Category { top, new_, ask, show, jobs }
-
 class Story {
   final int id;
   final String title;
