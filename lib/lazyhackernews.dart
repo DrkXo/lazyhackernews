@@ -10,7 +10,7 @@ Future<void> main() async {
 
   runApp(
     TuiTheme(
-      data: TuiThemeData.gruvboxDark,
+      data: TuiThemeData.nord,
       child: BlocProvider(
         create: (context) => getIt<LazyHackerNewsCubit>(),
         child: LazyHackerNews(),

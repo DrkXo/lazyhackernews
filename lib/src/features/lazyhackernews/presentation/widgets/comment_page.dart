@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:get_it/get_it.dart';
 import 'package:nocterm/nocterm.dart';
 
@@ -28,12 +30,17 @@ class _CommentPageState extends State<CommentPage> {
   String? _error;
   int _selectedIndex = 0;
   bool _isFresh = false;
+  final Set<int> _collapsed = {};
+  bool _internalScroll = false;
+
+  int get _termWidth => stdout.hasTerminal ? stdout.terminalColumns : 80;
 
   @override
   void initState() {
     super.initState();
     _story = component.story;
     _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
 
     final cached = _cache[_story.id];
     if (cached != null) {
@@ -61,6 +68,7 @@ class _CommentPageState extends State<CommentPage> {
       },
       (comments) {
         _cache[_story.id] = comments;
+        _collapsed.clear();
         setState(() {
           _comments = comments;
           _isLoading = false;
@@ -70,22 +78,155 @@ class _CommentPageState extends State<CommentPage> {
     );
   }
 
+  void _onScroll() {
+    if (_internalScroll) return;
+    final offset = _scrollController.offset;
+    final visible = _visibleIndices();
+    if (visible.isEmpty) return;
+    double cum = 0;
+    for (final idx in visible) {
+      final lines = _commentLines(idx);
+      if (offset >= cum - 0.5 && offset < cum + lines - 0.5) {
+        if (_selectedIndex != idx) {
+          _selectedIndex = idx;
+          setState(() {});
+        }
+        break;
+      }
+      cum += lines;
+    }
+  }
+
+  List<int> _visibleIndices() {
+    final indices = <int>[];
+    for (int i = 0; i < _comments.length; i++) {
+      indices.add(i);
+      if (_collapsed.contains(_comments[i].id)) {
+        final parentDepth = _comments[i].depth;
+        i++;
+        while (i < _comments.length && _comments[i].depth > parentDepth) {
+          i++;
+        }
+        i--;
+      }
+    }
+    return indices;
+  }
+
+  int _countHiddenReplies(int index) {
+    final parentDepth = _comments[index].depth;
+    int count = 0;
+    for (int j = index + 1; j < _comments.length; j++) {
+      if (_comments[j].depth <= parentDepth) break;
+      count++;
+    }
+    return count;
+  }
+
+  bool _hasChildren(int index) {
+    final d = _comments[index].depth;
+    return index + 1 < _comments.length && _comments[index + 1].depth > d;
+  }
+
+  bool _hasMoreAtDepth(List<Comment> comments, int start, int level) {
+    for (int j = start + 1; j < comments.length; j++) {
+      final d = comments[j].depth;
+      if (d == level) return true;
+      if (d < level) return false;
+    }
+    return false;
+  }
+
+  String _threadPrefix(List<Comment> comments, int index) {
+    final depth = comments[index].depth;
+    final buf = StringBuffer();
+    for (int l = 0; l < depth; l++) {
+      buf.write(_hasMoreAtDepth(comments, index, l) ? '\u2502 ' : '  ');
+    }
+    if (depth > 0 || index > 0) {
+      buf.write(
+        _hasMoreAtDepth(comments, index, depth)
+            ? '\u251c\u2500\u2500 '
+            : '\u2514\u2500\u2500 ',
+      );
+    }
+    return buf.toString();
+  }
+
+  int _textLines(String text) {
+    if (text.isEmpty) return 0;
+    final w = _termWidth - 6;
+    if (w <= 0) return 1;
+    final words = text.split(' ');
+    int lines = 1;
+    int cur = 0;
+    for (final word in words) {
+      if (cur + word.length + 1 > w) {
+        lines++;
+        cur = word.length;
+      } else {
+        cur += word.length + 1;
+      }
+    }
+    return lines;
+  }
+
+  int _commentLines(int index) {
+    final c = _comments[index];
+    if (c.isDeleted || c.isDead) return 1;
+    if (_collapsed.contains(c.id)) return 1;
+    return 1 + _textLines(c.displayText);
+  }
+
+  double _offsetForPos(int visiblePos, List<int> visible) {
+    double offset = 0;
+    for (int i = 0; i < visiblePos && i < visible.length; i++) {
+      offset += _commentLines(visible[i]);
+    }
+    return offset;
+  }
+
+  void _selectIndex(int index) {
+    final visible = _visibleIndices();
+    final pos = visible.indexOf(index);
+    if (pos < 0) return;
+    setState(() => _selectedIndex = index);
+    _internalScroll = true;
+    _scrollController.jumpTo(_offsetForPos(pos, visible));
+    _internalScroll = false;
+  }
+
   void _selectNext() {
-    if (_comments.isEmpty) return;
-    final next = (_selectedIndex + 1).clamp(0, _comments.length - 1);
-    setState(() => _selectedIndex = next);
-    _scrollController.jumpTo(next.toDouble());
+    final visible = _visibleIndices();
+    if (visible.isEmpty) return;
+    final currentPos = visible.indexOf(_selectedIndex);
+    final nextPos = (currentPos + 1).clamp(0, visible.length - 1);
+    _selectIndex(visible[nextPos]);
   }
 
   void _selectPrevious() {
-    if (_comments.isEmpty) return;
-    final prev = (_selectedIndex - 1).clamp(0, _comments.length - 1);
-    setState(() => _selectedIndex = prev);
-    _scrollController.jumpTo(prev.toDouble());
+    final visible = _visibleIndices();
+    if (visible.isEmpty) return;
+    final currentPos = visible.indexOf(_selectedIndex);
+    final prevPos = (currentPos - 1).clamp(0, visible.length - 1);
+    _selectIndex(visible[prevPos]);
+  }
+
+  void _toggleCollapse() {
+    if (!_hasChildren(_selectedIndex)) return;
+    setState(() {
+      final id = _comments[_selectedIndex].id;
+      if (_collapsed.contains(id)) {
+        _collapsed.remove(id);
+      } else {
+        _collapsed.add(id);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -103,12 +244,16 @@ class _CommentPageState extends State<CommentPage> {
           component.onBack();
           return true;
         }
-        if (key == LogicalKey.arrowDown || key == LogicalKey.keyJ) {
+        if (key == LogicalKey.keyJ) {
           _selectNext();
           return true;
         }
-        if (key == LogicalKey.arrowUp || key == LogicalKey.keyK) {
+        if (key == LogicalKey.keyK) {
           _selectPrevious();
+          return true;
+        }
+        if (key == LogicalKey.space || key == LogicalKey.enter) {
+          _toggleCollapse();
           return true;
         }
         if (key == LogicalKey.keyR) {
@@ -154,7 +299,7 @@ class _CommentPageState extends State<CommentPage> {
           ),
           const Spacer(),
           Text(
-            'j/k:nav  r:refresh  q/\u2190:back',
+            'j/k:nav  Space:collapse  r:refresh  q/\u2190:back',
             style: TextStyle(color: theme.outline),
           ),
         ],
@@ -190,60 +335,117 @@ class _CommentPageState extends State<CommentPage> {
       );
     }
 
+    final visible = _visibleIndices();
+
     return ListView.builder(
       controller: _scrollController,
-      keyboardScrollable: false,
-      itemCount: _comments.length,
-      itemBuilder: (context, index) {
+      keyboardScrollable: true,
+      itemCount: visible.length,
+      itemBuilder: (context, pos) {
+        final index = visible[pos];
         final comment = _comments[index];
         final isSelected = index == _selectedIndex;
-        return _commentRow(comment, isSelected, theme);
+        final hasChildren = _hasChildren(index);
+        final isCollapsed = _collapsed.contains(comment.id);
+        final prefix = _threadPrefix(_comments, index);
+        final hiddenCount = isCollapsed ? _countHiddenReplies(index) : 0;
+
+        return _commentRow(
+          comment: comment,
+          prefix: prefix,
+          isSelected: isSelected,
+          hasChildren: hasChildren,
+          isCollapsed: isCollapsed,
+          hiddenCount: hiddenCount,
+          onTap: () => _selectIndex(index),
+          theme: theme,
+        );
       },
     );
   }
 
-  Component _commentRow(Comment comment, bool isSelected, TuiThemeData theme) {
-    final indent = '  ' * comment.depth;
-    final prefix = comment.isDeleted || comment.isDead
-        ? '[removed]'
-        : '${comment.author} (${comment.points})';
-    final text = comment.isDeleted || comment.isDead
-        ? ''
-        : comment.oneLineText;
+  Component _commentRow({
+    required Comment comment,
+    required String prefix,
+    required bool isSelected,
+    required bool hasChildren,
+    required bool isCollapsed,
+    required int hiddenCount,
+    required VoidCallback onTap,
+    required TuiThemeData theme,
+  }) {
+    final bgColor = isSelected ? theme.primary.withOpacity(0.15) : null;
 
-    final bgColor = isSelected ? theme.primary.withOpacity(0.2) : null;
+    final selectMark = isSelected ? '\u25B6 ' : '  ';
+    final collapseMark = hasChildren
+        ? (isCollapsed ? ' \u25B6 ' : ' \u25BC ')
+        : '   ';
 
-    return Container(
-      color: bgColor,
-      height: 1,
-      child: Row(
-        children: [
-          if (isSelected)
-            Text(' \u25B6 ', style: TextStyle(color: theme.primary))
-          else
-            const Text('   '),
-          Text(indent),
-          Text(
-            prefix,
-            style: TextStyle(
-              color: comment.isDeleted || comment.isDead
-                  ? theme.outline
-                  : theme.secondary,
+    final nameColor = comment.isDeleted || comment.isDead
+        ? theme.outline
+        : theme.secondary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        color: bgColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(selectMark, style: TextStyle(color: theme.primary)),
+                Text(
+                  prefix,
+                  style: TextStyle(color: theme.outline.withOpacity(0.6)),
+                ),
+                Text(
+                  collapseMark,
+                  style: TextStyle(color: theme.outline),
+                ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Text(
+                        comment.isDeleted || comment.isDead
+                            ? '[removed]'
+                            : comment.author,
+                        style: TextStyle(color: nameColor),
+                      ),
+                      if (!comment.isDeleted && !comment.isDead)
+                        Text(
+                          ' (${comment.points})',
+                          style: TextStyle(color: theme.outline),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ),
-          if (text.isNotEmpty) ...[
-            const Text(' '),
-            Expanded(
-              child: Text(
-                text,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: theme.outline),
-              ),
-            ),
+            if (!comment.isDeleted && !comment.isDead)
+              isCollapsed
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Text(
+                        '($hiddenCount replies)',
+                        style: TextStyle(
+                          color: theme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : _buildText(comment.displayText, theme),
           ],
-        ],
+        ),
       ),
+    );
+  }
+
+  Component _buildText(String text, TuiThemeData theme) {
+    if (text.isEmpty) return SizedBox();
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Text(text, style: TextStyle(color: theme.outline)),
     );
   }
 }

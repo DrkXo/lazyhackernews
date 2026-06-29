@@ -34,8 +34,8 @@ class HackerNewsRepositoryImpl implements HackerNewsRepository {
     try {
       final story = await _dataSource.fetchItem(storyId);
       if (story.kids.isEmpty) return const Right([]);
-      final comments = await _buildTree(story.kids, 0, 50);
-      return Right(comments);
+      final comments = await _buildTree(story.kids, 0);
+      return Right(comments.take(50).toList());
     } on NetworkException catch (e) {
       return Left(NetworkFailure(message: e.message));
     } on ApiException catch (e) {
@@ -47,14 +47,15 @@ class HackerNewsRepositoryImpl implements HackerNewsRepository {
     }
   }
 
-  Future<List<Comment>> _buildTree(List<int> ids, int depth, int max) async {
-    if (ids.isEmpty || depth > 5 || max <= 0) return [];
-    final items = await _dataSource.fetchItems(ids.take(max).toList());
-    final results = <Comment>[];
-    var remaining = max;
+  Future<List<Comment>> _buildTree(List<int> ids, int depth) async {
+    if (ids.isEmpty || depth > 5) return [];
+    final items = await _dataSource.fetchItems(ids.take(30).toList());
+
+    final comments = <Comment>[];
+    final subtrees = <Future<List<Comment>>>[];
+
     for (final item in items) {
-      if (remaining <= 0) break;
-      results.add(Comment(
+      comments.add(Comment(
         id: item.id,
         author: item.by ?? '?',
         text: item.text ?? '',
@@ -64,14 +65,19 @@ class HackerNewsRepositoryImpl implements HackerNewsRepository {
         isDeleted: item.deleted,
         isDead: item.dead,
       ));
-      remaining--;
       if (item.kids.isNotEmpty && depth < 5) {
-        final kids = await _buildTree(item.kids, depth + 1, remaining);
-        results.addAll(kids);
-        remaining -= kids.length;
+        subtrees.add(_buildTree(item.kids, depth + 1));
       }
     }
-    return results;
+
+    if (subtrees.isNotEmpty) {
+      final children = await Future.wait(subtrees);
+      for (final childList in children) {
+        comments.addAll(childList);
+      }
+    }
+
+    return comments;
   }
 
   Story _toStory(Item item) {
