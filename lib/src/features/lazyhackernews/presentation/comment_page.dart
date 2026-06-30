@@ -104,7 +104,8 @@ class _CommentPageState extends State<CommentPage> {
     setState(() => _selectedIndex = index);
     _internalScroll = true;
     _scrollController.jumpTo(
-        offsetForPos(pos, visible, _comments, _collapsed, _termWidth));
+      offsetForPos(pos, visible, _comments, _collapsed, _termWidth),
+    );
     _internalScroll = false;
   }
 
@@ -156,11 +157,11 @@ class _CommentPageState extends State<CommentPage> {
           Navigator.of(context).pop();
           return true;
         }
-        if (key == LogicalKey.keyJ) {
+        if (key == LogicalKey.keyJ || key == LogicalKey.arrowDown) {
           _selectNext();
           return true;
         }
-        if (key == LogicalKey.keyK) {
+        if (key == LogicalKey.keyK || key == LogicalKey.arrowUp) {
           _selectPrevious();
           return true;
         }
@@ -211,7 +212,7 @@ class _CommentPageState extends State<CommentPage> {
           ),
           const Spacer(),
           Text(
-            'j/k:nav  Space:collapse  r:refresh  q/\u2190:back',
+            '\u2191/\u2193/j/k:nav  Space:collapse  r:refresh  q/\u2190:back',
             style: TextStyle(color: theme.outline),
           ),
         ],
@@ -263,8 +264,9 @@ class _CommentPageState extends State<CommentPage> {
           final hc = hasChildren(_comments, index);
           final isCollapsed = _collapsed.contains(comment.id);
           final prefix = threadPrefix(_comments, index);
-          final hiddenCount =
-              isCollapsed ? countHiddenReplies(_comments, index) : 0;
+          final hiddenCount = isCollapsed
+              ? countHiddenReplies(_comments, index)
+              : 0;
           final indent = 2 + prefix.length + (hc ? 4 : 3);
 
           return CommentRow(
