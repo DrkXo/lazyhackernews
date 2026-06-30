@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:nocterm/nocterm.dart';
 import 'package:nocterm_bloc/nocterm_bloc.dart';
 
+import '../../../core/routes/routes.dart';
 import '../../../core/services/input_service.dart';
 import '../../../core/services/mouse_service.dart';
 import '../../../core/services/scroll_service.dart';
@@ -35,16 +36,28 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     _scrollService.controller.addListener(_onScroll);
 
     _inputService.registerAll([
-      KeyBinding(key: LogicalKey.escape, action: () { shutdownApp(); return true; }),
+      KeyBinding(
+        key: LogicalKey.escape,
+        action: () {
+          shutdownApp();
+          return true;
+        },
+      ),
       KeyBinding(
         key: LogicalKey.keyQ,
         predicate: (e) => !e.isControlPressed,
-        action: () { shutdownApp(); return true; },
+        action: () {
+          shutdownApp();
+          return true;
+        },
       ),
       KeyBinding(
         key: LogicalKey.keyQ,
         predicate: (e) => e.isControlPressed,
-        action: () { shutdownApp(); return true; },
+        action: () {
+          shutdownApp();
+          return true;
+        },
       ),
       KeyBinding(
         key: LogicalKey.keyJ,
@@ -137,7 +150,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     final stories = _cubit.state.stories;
     if (stories.isEmpty) return;
     final story = stories[_cubit.state.selectedIndex];
-    Navigator.of(context).pushNamed('/comments', arguments: story);
+    Navigator.of(context).pushNamed(Routes.comments, arguments: story);
   }
 
   void _onStateChanged(LazyHackerNewsState state) {
