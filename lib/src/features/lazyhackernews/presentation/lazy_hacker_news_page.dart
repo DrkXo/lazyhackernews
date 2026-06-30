@@ -60,6 +60,14 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
         },
       ),
       KeyBinding(
+        key: LogicalKey.keyC,
+        predicate: (e) => e.isControlPressed,
+        action: () {
+          shutdownApp();
+          return true;
+        },
+      ),
+      KeyBinding(
         key: LogicalKey.keyJ,
         action: () {
           _cubit.selectNext();
