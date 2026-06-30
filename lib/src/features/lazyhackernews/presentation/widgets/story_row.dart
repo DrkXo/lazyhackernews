@@ -8,7 +8,7 @@ Color _pointsColor(int points) {
   return Colors.gray;
 }
 
-class StoryRow extends StatelessComponent {
+class StoryRow extends StatefulComponent {
   final Story story;
   final int index;
   final bool isSelected;
@@ -23,13 +23,26 @@ class StoryRow extends StatelessComponent {
   });
 
   @override
+  State<StoryRow> createState() => _StoryRowState();
+}
+
+class _StoryRowState extends State<StoryRow> {
+  bool _isHovered = false;
+
+  @override
   Component build(BuildContext context) {
     final theme = TuiTheme.of(context);
-    final color = _pointsColor(story.points);
+    final color = _pointsColor(component.story.points);
+    final isSelected = component.isSelected;
+    final isHovered = _isHovered && !isSelected;
+    final highlighted = isSelected || isHovered;
 
     final row = Container(
-      color:
-          isSelected ? theme.primary.withOpacity(0.3) : null,
+      color: isSelected
+          ? theme.primary.withOpacity(0.35)
+          : isHovered
+              ? const Color(0xFF333333)
+              : null,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 1),
         child: SizedBox(
@@ -37,31 +50,48 @@ class StoryRow extends StatelessComponent {
           child: Row(
             children: [
               Text(
-                isSelected ? ' \u25B6 ' : '   ',
+                isSelected
+                    ? ' \u25B6 '
+                    : isHovered
+                        ? ' \u2192 '
+                        : '   ',
                 style: TextStyle(
-                  color: isSelected ? theme.primary : theme.outline,
+                  color: highlighted ? theme.primary : theme.outline,
                 ),
               ),
               Expanded(
                 child: Text(
-                  '${index + 1}. ${story.title}',
+                  '${component.index + 1}. ${component.story.title}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: highlighted ? FontWeight.bold : null,
+                    color: highlighted ? const Color(0xFFFFFFFF) : null,
+                  ),
                 ),
               ),
-              Text(
-                ' ${story.points}pts',
-                style: TextStyle(color: color),
-              ),
+              if (isSelected)
+                Text(
+                  ' ${component.story.points}pts \u2713',
+                  style: TextStyle(color: color),
+                )
+              else
+                Text(
+                  ' ${component.story.points}pts',
+                  style: TextStyle(color: color),
+                ),
             ],
           ),
         ),
       ),
     );
 
-    if (onTap != null) {
-      return GestureDetector(onTap: onTap, child: row);
-    }
-    return row;
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: component.onTap != null
+          ? GestureDetector(onTap: component.onTap, child: row)
+          : row,
+    );
   }
 }

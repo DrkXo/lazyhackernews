@@ -8,6 +8,6 @@ class ScrollService {
   }
 
   void scrollToIndex(int index) {
-    controller.jumpTo(index.toDouble());
+    controller.ensureIndexVisible(index: index);
   }
 }

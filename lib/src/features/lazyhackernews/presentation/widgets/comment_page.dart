@@ -27,6 +27,7 @@ class _CommentPageState extends State<CommentPage> {
   bool _isLoading = true;
   String? _error;
   int _selectedIndex = 0;
+  int? _hoveredIndex;
   bool _isFresh = false;
   final Set<int> _collapsed = {};
   bool _internalScroll = false;
@@ -354,30 +355,38 @@ class _CommentPageState extends State<CommentPage> {
 
     final visible = _visibleIndices();
 
-    return ListView.builder(
-      controller: _scrollController,
-      keyboardScrollable: true,
-      itemCount: visible.length,
-      itemBuilder: (context, pos) {
-        final index = visible[pos];
-        final comment = _comments[index];
-        final isSelected = index == _selectedIndex;
-        final hasChildren = _hasChildren(index);
-        final isCollapsed = _collapsed.contains(comment.id);
-        final prefix = _threadPrefix(_comments, index);
-        final hiddenCount = isCollapsed ? _countHiddenReplies(index) : 0;
+    return SelectionArea(
+      onSelectionCompleted: ClipboardManager.copy,
+      selectionColor: theme.primary.withOpacity(0.25),
+      child: ListView.builder(
+        controller: _scrollController,
+        keyboardScrollable: true,
+        itemCount: visible.length,
+        itemBuilder: (context, pos) {
+          final index = visible[pos];
+          final comment = _comments[index];
+          final isSelected = index == _selectedIndex;
+          final isHovered = index == _hoveredIndex;
+          final hasChildren = _hasChildren(index);
+          final isCollapsed = _collapsed.contains(comment.id);
+          final prefix = _threadPrefix(_comments, index);
+          final hiddenCount = isCollapsed ? _countHiddenReplies(index) : 0;
 
-        return _commentRow(
-          comment: comment,
-          prefix: prefix,
-          isSelected: isSelected,
-          hasChildren: hasChildren,
-          isCollapsed: isCollapsed,
-          hiddenCount: hiddenCount,
-          onTap: () => _selectIndex(index),
-          theme: theme,
-        );
-      },
+          return _commentRow(
+            comment: comment,
+            prefix: prefix,
+            isSelected: isSelected,
+            isHovered: isHovered,
+            hasChildren: hasChildren,
+            isCollapsed: isCollapsed,
+            hiddenCount: hiddenCount,
+            onTap: () => _selectIndex(index),
+            onHoverEnter: () => setState(() => _hoveredIndex = index),
+            onHoverExit: () => setState(() => _hoveredIndex = null),
+            theme: theme,
+          );
+        },
+      ),
     );
   }
 
@@ -385,82 +394,115 @@ class _CommentPageState extends State<CommentPage> {
     required Comment comment,
     required String prefix,
     required bool isSelected,
+    required bool isHovered,
     required bool hasChildren,
     required bool isCollapsed,
     required int hiddenCount,
     required VoidCallback onTap,
+    required VoidCallback onHoverEnter,
+    required VoidCallback onHoverExit,
     required TuiThemeData theme,
   }) {
-    final selectMark = isSelected ? '\u25B6 ' : '  ';
+    final highlighted = isSelected || isHovered;
+    final effectiveHover = isHovered && !isSelected;
+    final selectMark = isSelected ? '\u25B6 ' : (isHovered ? '\u2192 ' : '  ');
     final collapseMark = hasChildren
         ? (isCollapsed ? ' \u25B6 ' : ' \u25BC ')
         : '   ';
 
     final nameColor = comment.isDeleted || comment.isDead
         ? theme.outline
-        : theme.secondary;
+        : (highlighted ? const Color(0xFFFFFFFF) : theme.secondary);
 
     final textIndent = 2 + prefix.length + (hasChildren ? 4 : 3);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.only(bottom: 1),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(selectMark, style: TextStyle(color: theme.primary)),
-                Text(
-                  prefix,
-                  style: TextStyle(color: theme.outline.withOpacity(0.6)),
-                ),
-                Text(
-                  collapseMark,
-                  style: TextStyle(color: theme.outline),
-                ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Text(
-                        comment.isDeleted || comment.isDead
-                            ? '[removed]'
-                            : comment.author,
-                        style: TextStyle(color: nameColor),
-                      ),
-                      if (!comment.isDeleted && !comment.isDead)
-                        Text(
-                          ' (${comment.points})',
-                          style: TextStyle(color: theme.outline),
-                        ),
-                    ],
+    return MouseRegion(
+      onEnter: (_) => onHoverEnter(),
+      onExit: (_) => onHoverExit(),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          color: isSelected
+              ? theme.primary.withOpacity(0.3)
+              : effectiveHover
+                  ? const Color(0xFF2A2A2A)
+                  : null,
+          padding: const EdgeInsets.only(bottom: 1),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(selectMark, style: TextStyle(color: theme.primary)),
+                  Text(
+                    prefix,
+                    style: TextStyle(
+                      color: highlighted
+                          ? const Color(0xFFFFFFFF)
+                          : theme.outline.withOpacity(0.6),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            if (!comment.isDeleted && !comment.isDead)
-              isCollapsed
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Row(
-                        children: [
-                          Text(
-                            prefix,
-                            style: TextStyle(color: theme.outline.withOpacity(0.6)),
+                  Text(
+                    collapseMark,
+                    style: TextStyle(
+                      color: highlighted
+                          ? const Color(0xFFFFFFFF)
+                          : theme.outline,
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Text(
+                          comment.isDeleted || comment.isDead
+                              ? '[removed]'
+                              : comment.author,
+                          style: TextStyle(
+                            color: nameColor,
+                            fontWeight: highlighted ? FontWeight.bold : null,
                           ),
+                        ),
+                        if (!comment.isDeleted && !comment.isDead)
                           Text(
-                            '($hiddenCount replies)',
+                            ' (${comment.points})',
                             style: TextStyle(
-                              color: theme.primary,
-                              fontWeight: FontWeight.bold,
+                              color: highlighted
+                                  ? const Color(0xFFFFFFFF)
+                                  : theme.outline,
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  : _buildText(comment.displayText, textIndent),
-          ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (!comment.isDeleted && !comment.isDead)
+                isCollapsed
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Row(
+                          children: [
+                            Text(
+                              prefix,
+                              style: TextStyle(
+                                color: highlighted
+                                    ? const Color(0xFFFFFFFF)
+                                    : theme.outline.withOpacity(0.6),
+                              ),
+                            ),
+                            Text(
+                              '($hiddenCount replies)',
+                              style: TextStyle(
+                                color: theme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : _buildText(comment.displayText, textIndent),
+            ],
+          ),
         ),
       ),
     );
