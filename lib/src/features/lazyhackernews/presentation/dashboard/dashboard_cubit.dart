@@ -4,14 +4,14 @@ import 'package:nocterm_bloc/nocterm_bloc.dart';
 import '../../data/models/models.dart';
 import '../../domain/usecases/fetch_stories_usecase.dart';
 
-part 'lazy_hacker_news_cubit.freezed.dart';
-part 'lazy_hacker_news_state.dart';
+part 'dashboard_cubit.freezed.dart';
+part 'dashboard_state.dart';
 
-class LazyHackerNewsCubit extends Cubit<LazyHackerNewsState> {
+class DashboardCubit extends Cubit<DashboardState> {
   final FetchStoriesUseCase _fetchStories;
 
-  LazyHackerNewsCubit({required this._fetchStories})
-      : super(const LazyHackerNewsState(isLoading: true)) {
+  DashboardCubit({required this._fetchStories})
+    : super(const DashboardState(isLoading: true)) {
     _loadStories();
   }
 
@@ -60,7 +60,11 @@ class LazyHackerNewsCubit extends Cubit<LazyHackerNewsState> {
 
   Future<void> _loadBatch(int offset) async {
     emit(state.copyWith(isLoadingMore: true));
-    final result = await _fetchStories(state.category, offset: offset, limit: 15);
+    final result = await _fetchStories(
+      state.category,
+      offset: offset,
+      limit: 15,
+    );
     result.fold(
       (failure) => emit(state.copyWith(isLoadingMore: false)),
       (stories) => emit(

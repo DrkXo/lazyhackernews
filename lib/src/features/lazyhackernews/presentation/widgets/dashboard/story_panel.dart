@@ -1,12 +1,12 @@
 import 'package:nocterm/nocterm.dart';
 
-import '../../../../core/services/scroll_service.dart';
-import '../cubit/lazy_hacker_news_cubit.dart';
+import '../../../../../core/services/scroll_service.dart';
+import '../../dashboard/dashboard_cubit.dart';
 import 'simmer_loading.dart';
 import 'story_row.dart';
 
 class StoryPanel extends StatelessComponent {
-  final LazyHackerNewsState state;
+  final DashboardState state;
   final ScrollService scrollService;
   final void Function(int index) onStoryTap;
 

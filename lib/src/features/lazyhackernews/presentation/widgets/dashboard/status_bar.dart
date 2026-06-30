@@ -1,6 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 
-import '../../data/models/models.dart';
+import '../../../data/models/models.dart';
 
 class StatusBar extends StatelessComponent {
   final FeedType category;

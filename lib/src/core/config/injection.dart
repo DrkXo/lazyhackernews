@@ -2,16 +2,16 @@ library;
 
 import 'package:get_it/get_it.dart';
 
-import '../services/http_service.dart';
-import '../services/input_service.dart';
-import '../services/mouse_service.dart';
-import '../services/scroll_service.dart';
 import '../../features/lazyhackernews/data/implements/hacker_news_repository_impl.dart';
 import '../../features/lazyhackernews/data/sources/hacker_news_remote_data_source.dart';
 import '../../features/lazyhackernews/domain/repositories/hacker_news_repository.dart';
 import '../../features/lazyhackernews/domain/usecases/fetch_comments_usecase.dart';
 import '../../features/lazyhackernews/domain/usecases/fetch_stories_usecase.dart';
-import '../../features/lazyhackernews/presentation/cubit/lazy_hacker_news_cubit.dart';
+import '../../features/lazyhackernews/presentation/dashboard/dashboard_cubit.dart';
+import '../services/http_service.dart';
+import '../services/input_service.dart';
+import '../services/mouse_service.dart';
+import '../services/scroll_service.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -39,7 +39,7 @@ Future<void> configureDependencies() async {
     FetchCommentsUseCase(repository: getIt<HackerNewsRepository>()),
   );
 
-  getIt.registerSingleton<LazyHackerNewsCubit>(
-    LazyHackerNewsCubit(fetchStories: getIt<FetchStoriesUseCase>()),
+  getIt.registerSingleton<DashboardCubit>(
+    DashboardCubit(fetchStories: getIt<FetchStoriesUseCase>()),
   );
 }

@@ -1,9 +1,9 @@
 import 'package:nocterm/nocterm.dart';
 
-import '../cubit/lazy_hacker_news_cubit.dart';
+import '../../dashboard/dashboard_cubit.dart';
 
 class DetailPanel extends StatelessComponent {
-  final LazyHackerNewsState state;
+  final DashboardState state;
 
   const DetailPanel({required this.state, super.key});
 

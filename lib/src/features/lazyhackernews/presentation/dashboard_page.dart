@@ -7,21 +7,21 @@ import '../../../core/services/input_service.dart';
 import '../../../core/services/mouse_service.dart';
 import '../../../core/services/scroll_service.dart';
 import '../data/models/models.dart';
-import 'cubit/lazy_hacker_news_cubit.dart';
-import 'widgets/detail_panel.dart';
-import 'widgets/header_bar.dart';
-import 'widgets/status_bar.dart';
-import 'widgets/story_panel.dart';
+import 'dashboard/dashboard_cubit.dart';
+import 'widgets/dashboard/detail_panel.dart';
+import 'widgets/dashboard/header_bar.dart';
+import 'widgets/dashboard/status_bar.dart';
+import 'widgets/dashboard/story_panel.dart';
 
-class LazyHackerNews extends StatefulComponent {
-  const LazyHackerNews({super.key});
+class DashboardPage extends StatefulComponent {
+  const DashboardPage({super.key});
 
   @override
-  State<LazyHackerNews> createState() => _LazyHackerNewsState();
+  State<DashboardPage> createState() => _DashBoardPageState();
 }
 
-class _LazyHackerNewsState extends State<LazyHackerNews> {
-  late final LazyHackerNewsCubit _cubit;
+class _DashBoardPageState extends State<DashboardPage> {
+  late final DashboardCubit _cubit;
   final _inputService = GetIt.I<InputService>();
   final _scrollService = GetIt.I<ScrollService>();
   final _mouseService = GetIt.I<MouseService>();
@@ -30,7 +30,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
   @override
   void initState() {
     super.initState();
-    _cubit = context.read<LazyHackerNewsCubit>();
+    _cubit = context.read<DashboardCubit>();
 
     _mouseService.onStoryTap = (index) => _cubit.selectAt(index);
     _scrollService.controller.addListener(_onScroll);
@@ -161,7 +161,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     Navigator.of(context).pushNamed(Routes.comments, arguments: story);
   }
 
-  void _onStateChanged(LazyHackerNewsState state) {
+  void _onStateChanged(DashboardState state) {
     if (_prevSelectedIndex != state.selectedIndex) {
       _prevSelectedIndex = state.selectedIndex;
       _scrollService.scrollToIndex(state.selectedIndex);
@@ -189,7 +189,7 @@ class _LazyHackerNewsState extends State<LazyHackerNews> {
     return Focusable(
       focused: true,
       onKeyEvent: (event) => _inputService.handle(event),
-      child: BlocBuilder<LazyHackerNewsCubit, LazyHackerNewsState>(
+      child: BlocBuilder<DashboardCubit, DashboardState>(
         builder: (context, state) {
           _onStateChanged(state);
           final theme = TuiTheme.of(context);

@@ -1,6 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 
-import '../../data/models/models.dart';
+import '../../../data/models/models.dart';
 
 Color _pointsColor(int points) {
   if (points > 100) return Colors.green;

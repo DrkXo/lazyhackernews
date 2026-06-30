@@ -1,8 +1,8 @@
-part of 'lazy_hacker_news_cubit.dart';
+part of 'dashboard_cubit.dart';
 
 @freezed
-abstract class LazyHackerNewsState with _$LazyHackerNewsState {
-  const factory LazyHackerNewsState({
+abstract class DashboardState with _$DashboardState {
+  const factory DashboardState({
     @Default([]) List<Story> stories,
     @Default(0) int selectedIndex,
     @Default(FeedType.top) FeedType category,
@@ -10,5 +10,5 @@ abstract class LazyHackerNewsState with _$LazyHackerNewsState {
     @Default(false) bool isLoadingMore,
     @Default(true) bool hasMore,
     String? error,
-  }) = _LazyHackerNewsState;
+  }) = _DashboardState;
 }
