@@ -12,6 +12,284 @@ part of 'models.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$Comment {
+
+ int get id; String get author; String get text; int get time; int get points; int get depth; bool get isDeleted; bool get isDead;
+/// Create a copy of Comment
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CommentCopyWith<Comment> get copyWith => _$CommentCopyWithImpl<Comment>(this as Comment, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Comment&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.text, text) || other.text == text)&&(identical(other.time, time) || other.time == time)&&(identical(other.points, points) || other.points == points)&&(identical(other.depth, depth) || other.depth == depth)&&(identical(other.isDeleted, isDeleted) || other.isDeleted == isDeleted)&&(identical(other.isDead, isDead) || other.isDead == isDead));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,author,text,time,points,depth,isDeleted,isDead);
+
+@override
+String toString() {
+  return 'Comment(id: $id, author: $author, text: $text, time: $time, points: $points, depth: $depth, isDeleted: $isDeleted, isDead: $isDead)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $CommentCopyWith<$Res>  {
+  factory $CommentCopyWith(Comment value, $Res Function(Comment) _then) = _$CommentCopyWithImpl;
+@useResult
+$Res call({
+ int id, String author, String text, int time, int points, int depth, bool isDeleted, bool isDead
+});
+
+
+
+
+}
+/// @nodoc
+class _$CommentCopyWithImpl<$Res>
+    implements $CommentCopyWith<$Res> {
+  _$CommentCopyWithImpl(this._self, this._then);
+
+  final Comment _self;
+  final $Res Function(Comment) _then;
+
+/// Create a copy of Comment
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? author = null,Object? text = null,Object? time = null,Object? points = null,Object? depth = null,Object? isDeleted = null,Object? isDead = null,}) {
+  return _then(Comment(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as int,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,depth: null == depth ? _self.depth : depth // ignore: cast_nullable_to_non_nullable
+as int,isDeleted: null == isDeleted ? _self.isDeleted : isDeleted // ignore: cast_nullable_to_non_nullable
+as bool,isDead: null == isDead ? _self.isDead : isDead // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [Comment].
+extension CommentPatterns on Comment {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Comment value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Comment() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Comment value)  $default,){
+final _that = this;
+switch (_that) {
+case _Comment():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Comment value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Comment() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String author,  String text,  int time,  int points,  int depth,  bool isDeleted,  bool isDead)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Comment() when $default != null:
+return $default(_that.id,_that.author,_that.text,_that.time,_that.points,_that.depth,_that.isDeleted,_that.isDead);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String author,  String text,  int time,  int points,  int depth,  bool isDeleted,  bool isDead)  $default,) {final _that = this;
+switch (_that) {
+case _Comment():
+return $default(_that.id,_that.author,_that.text,_that.time,_that.points,_that.depth,_that.isDeleted,_that.isDead);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String author,  String text,  int time,  int points,  int depth,  bool isDeleted,  bool isDead)?  $default,) {final _that = this;
+switch (_that) {
+case _Comment() when $default != null:
+return $default(_that.id,_that.author,_that.text,_that.time,_that.points,_that.depth,_that.isDeleted,_that.isDead);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _Comment extends Comment {
+  const _Comment({required this.id, this.author = '', this.text = '', this.time = 0, this.points = 0, this.depth = 0, this.isDeleted = false, this.isDead = false}): super._();
+  
+
+@override final  int id;
+@override@JsonKey() final  String author;
+@override@JsonKey() final  String text;
+@override@JsonKey() final  int time;
+@override@JsonKey() final  int points;
+@override@JsonKey() final  int depth;
+@override@JsonKey() final  bool isDeleted;
+@override@JsonKey() final  bool isDead;
+
+/// Create a copy of Comment
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CommentCopyWith<_Comment> get copyWith => __$CommentCopyWithImpl<_Comment>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Comment&&(identical(other.id, id) || other.id == id)&&(identical(other.author, author) || other.author == author)&&(identical(other.text, text) || other.text == text)&&(identical(other.time, time) || other.time == time)&&(identical(other.points, points) || other.points == points)&&(identical(other.depth, depth) || other.depth == depth)&&(identical(other.isDeleted, isDeleted) || other.isDeleted == isDeleted)&&(identical(other.isDead, isDead) || other.isDead == isDead));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,author,text,time,points,depth,isDeleted,isDead);
+
+@override
+String toString() {
+  return 'Comment(id: $id, author: $author, text: $text, time: $time, points: $points, depth: $depth, isDeleted: $isDeleted, isDead: $isDead)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CommentCopyWith<$Res> implements $CommentCopyWith<$Res> {
+  factory _$CommentCopyWith(_Comment value, $Res Function(_Comment) _then) = __$CommentCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, String author, String text, int time, int points, int depth, bool isDeleted, bool isDead
+});
+
+
+
+
+}
+/// @nodoc
+class __$CommentCopyWithImpl<$Res>
+    implements _$CommentCopyWith<$Res> {
+  __$CommentCopyWithImpl(this._self, this._then);
+
+  final _Comment _self;
+  final $Res Function(_Comment) _then;
+
+/// Create a copy of Comment
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? author = null,Object? text = null,Object? time = null,Object? points = null,Object? depth = null,Object? isDeleted = null,Object? isDead = null,}) {
+  return _then(_Comment(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
+as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as int,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,depth: null == depth ? _self.depth : depth // ignore: cast_nullable_to_non_nullable
+as int,isDeleted: null == isDeleted ? _self.isDeleted : isDeleted // ignore: cast_nullable_to_non_nullable
+as bool,isDead: null == isDead ? _self.isDead : isDead // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
 
 /// @nodoc
 mixin _$Item {
@@ -323,6 +601,281 @@ as int?,title: freezed == title ? _self.title : title // ignore: cast_nullable_t
 as String?,parts: null == parts ? _self._parts : parts // ignore: cast_nullable_to_non_nullable
 as List<int>,descendants: freezed == descendants ? _self.descendants : descendants // ignore: cast_nullable_to_non_nullable
 as int?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$Story {
+
+ int get id; String get title; int get points; String get author; int get commentCount; String? get url; String? get domain;
+/// Create a copy of Story
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$StoryCopyWith<Story> get copyWith => _$StoryCopyWithImpl<Story>(this as Story, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Story&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.points, points) || other.points == points)&&(identical(other.author, author) || other.author == author)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.url, url) || other.url == url)&&(identical(other.domain, domain) || other.domain == domain));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,title,points,author,commentCount,url,domain);
+
+@override
+String toString() {
+  return 'Story(id: $id, title: $title, points: $points, author: $author, commentCount: $commentCount, url: $url, domain: $domain)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $StoryCopyWith<$Res>  {
+  factory $StoryCopyWith(Story value, $Res Function(Story) _then) = _$StoryCopyWithImpl;
+@useResult
+$Res call({
+ int id, String title, int points, String author, int commentCount, String? url, String? domain
+});
+
+
+
+
+}
+/// @nodoc
+class _$StoryCopyWithImpl<$Res>
+    implements $StoryCopyWith<$Res> {
+  _$StoryCopyWithImpl(this._self, this._then);
+
+  final Story _self;
+  final $Res Function(Story) _then;
+
+/// Create a copy of Story
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? points = null,Object? author = null,Object? commentCount = null,Object? url = freezed,Object? domain = freezed,}) {
+  return _then(Story(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
+as int,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String?,domain: freezed == domain ? _self.domain : domain // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [Story].
+extension StoryPatterns on Story {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Story value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Story() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Story value)  $default,){
+final _that = this;
+switch (_that) {
+case _Story():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Story value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Story() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  int points,  String author,  int commentCount,  String? url,  String? domain)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Story() when $default != null:
+return $default(_that.id,_that.title,_that.points,_that.author,_that.commentCount,_that.url,_that.domain);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  int points,  String author,  int commentCount,  String? url,  String? domain)  $default,) {final _that = this;
+switch (_that) {
+case _Story():
+return $default(_that.id,_that.title,_that.points,_that.author,_that.commentCount,_that.url,_that.domain);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  int points,  String author,  int commentCount,  String? url,  String? domain)?  $default,) {final _that = this;
+switch (_that) {
+case _Story() when $default != null:
+return $default(_that.id,_that.title,_that.points,_that.author,_that.commentCount,_that.url,_that.domain);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _Story implements Story {
+  const _Story({required this.id, required this.title, this.points = 0, this.author = '', this.commentCount = 0, this.url, this.domain});
+  
+
+@override final  int id;
+@override final  String title;
+@override@JsonKey() final  int points;
+@override@JsonKey() final  String author;
+@override@JsonKey() final  int commentCount;
+@override final  String? url;
+@override final  String? domain;
+
+/// Create a copy of Story
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$StoryCopyWith<_Story> get copyWith => __$StoryCopyWithImpl<_Story>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Story&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.points, points) || other.points == points)&&(identical(other.author, author) || other.author == author)&&(identical(other.commentCount, commentCount) || other.commentCount == commentCount)&&(identical(other.url, url) || other.url == url)&&(identical(other.domain, domain) || other.domain == domain));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,title,points,author,commentCount,url,domain);
+
+@override
+String toString() {
+  return 'Story(id: $id, title: $title, points: $points, author: $author, commentCount: $commentCount, url: $url, domain: $domain)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
+  factory _$StoryCopyWith(_Story value, $Res Function(_Story) _then) = __$StoryCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, String title, int points, String author, int commentCount, String? url, String? domain
+});
+
+
+
+
+}
+/// @nodoc
+class __$StoryCopyWithImpl<$Res>
+    implements _$StoryCopyWith<$Res> {
+  __$StoryCopyWithImpl(this._self, this._then);
+
+  final _Story _self;
+  final $Res Function(_Story) _then;
+
+/// Create a copy of Story
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? points = null,Object? author = null,Object? commentCount = null,Object? url = freezed,Object? domain = freezed,}) {
+  return _then(_Story(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,points: null == points ? _self.points : points // ignore: cast_nullable_to_non_nullable
+as int,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String,commentCount: null == commentCount ? _self.commentCount : commentCount // ignore: cast_nullable_to_non_nullable
+as int,url: freezed == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
+as String?,domain: freezed == domain ? _self.domain : domain // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

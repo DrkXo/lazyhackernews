@@ -1,21 +1,14 @@
 part of '../../data/models/models.dart';
 
-class Story {
-  final int id;
-  final String title;
-  final int points;
-  final String author;
-  final int commentCount;
-  final String? url;
-  final String? domain;
-
-  const Story({
-    required this.id,
-    required this.title,
-    this.points = 0,
-    this.author = '',
-    this.commentCount = 0,
-    this.url,
-    this.domain,
-  });
+@freezed
+abstract class Story with _$Story {
+  const factory Story({
+    required int id,
+    required String title,
+    @Default(0) int points,
+    @Default('') String author,
+    @Default(0) int commentCount,
+    String? url,
+    String? domain,
+  }) = _Story;
 }

@@ -1,25 +1,19 @@
 part of '../../data/models/models.dart';
 
-class Comment {
-  final int id;
-  final String author;
-  final String text;
-  final int time;
-  final int points;
-  final int depth;
-  final bool isDeleted;
-  final bool isDead;
+@freezed
+abstract class Comment with _$Comment {
+  const factory Comment({
+    required int id,
+    @Default('') String author,
+    @Default('') String text,
+    @Default(0) int time,
+    @Default(0) int points,
+    @Default(0) int depth,
+    @Default(false) bool isDeleted,
+    @Default(false) bool isDead,
+  }) = _Comment;
 
-  const Comment({
-    required this.id,
-    this.author = '',
-    this.text = '',
-    this.time = 0,
-    this.points = 0,
-    this.depth = 0,
-    this.isDeleted = false,
-    this.isDead = false,
-  });
+  const Comment._();
 
   String get displayText {
     if (isDeleted || isDead) return '[removed]';

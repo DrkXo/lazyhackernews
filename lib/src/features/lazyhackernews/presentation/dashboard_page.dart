@@ -210,8 +210,10 @@ class _DashBoardPageState extends State<DashboardPage> {
                         scrollService: _scrollService,
                         onStoryTap: (i) => _cubit.selectAt(i),
                       ),
-                      VerticalDivider(width: 1, color: theme.outline),
-                      DetailPanel(state: state),
+                      if (!state.isLoading && state.stories.isNotEmpty)
+                        VerticalDivider(width: 1, color: theme.outline),
+                      if (!state.isLoading && state.stories.isNotEmpty)
+                        DetailPanel(state: state),
                     ],
                   ),
                 ),
